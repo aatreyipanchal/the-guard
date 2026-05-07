@@ -1,0 +1,3464 @@
+{
+  "deal_copy_generation": [
+    {
+      "id": "deal_001",
+      "task_type": "deal_copy",
+      "brand": "Myntra",
+      "category": "Fashion",
+      "discount": "Flat 500 Off",
+      "coupon_code": "MYNTRA500",
+      "channel": "Push notification",
+      "language": "english",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "golden_case": true
+      },
+      "reference_output": {
+        "title": "Flat ₹500 OFF on Myntra! 🛍️",
+        "body": "Use MYNTRA500 on your favorite fashion brands. Limited period offer. Shop now!"
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_002",
+      "task_type": "deal_copy",
+      "brand": "BigBasket",
+      "category": "Groceries",
+      "discount": "20% Cashback",
+      "coupon_code": "BBNEW20",
+      "channel": "WhatsApp",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "North",
+        "festival": "Diwali",
+        "device": "ios"
+      },
+      "reference_output": "दिवाली की मिठास BigBasket के साथ! ✨ BBNEW20 कोड का उपयोग करें और पाएं 20% कैशबैक अपनी पहली ग्रोसरी शॉपिंग पर। अभी ऑर्डर करें!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_003",
+      "task_type": "deal_copy",
+      "brand": "Swiggy",
+      "category": "Food Delivery",
+      "discount": "60% OFF",
+      "coupon_code": "WELCOME60",
+      "channel": "SMS",
+      "language": "telugu",
+      "constraints": {
+        "max_chars": 120
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Telangana",
+        "festival": "Sankranti",
+        "device": "android"
+      },
+      "reference_output": "Swiggy Sankranti Sambaralu! 🌾 WELCOME60 కోడ్ వాడండి, 60% తగ్గింపు పొందండి. ఇప్పుడే ఆర్డర్ చేయండి!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_004",
+      "task_type": "deal_copy",
+      "brand": "The Lakshmi Vilas Palace Heritage Collection & Resorts India",
+      "category": "Travel",
+      "discount": "Up to 90% OFF",
+      "coupon_code": "LUX90",
+      "channel": "Glance",
+      "language": "english",
+      "constraints": {
+        "max_chars": 40
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "Luxury Stay at 90% OFF! Use LUX90.",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_005",
+      "task_type": "deal_copy",
+      "brand": "Flipkart",
+      "category": "Electronics",
+      "discount": "₹10,000 Off on iPhone 15",
+      "coupon_code": "IPHONE10K / APPLE60",
+      "channel": "Push notification",
+      "language": "hinglish",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "ios",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": {
+        "title": "iPhone 15 deals miss mat karo! 📱",
+        "body": "Use IPHONE10K for flat ₹10,000 off. Stock khatam hone se pehle buy karein!"
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_006",
+      "task_type": "deal_copy",
+      "brand": "Ajio",
+      "category": "Fashion",
+      "discount": "Buy 1 Get 4 Free",
+      "coupon_code": "AJIOB1G4",
+      "channel": "Email subject",
+      "language": "english",
+      "constraints": {
+        "max_chars": 60
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "ios"
+      },
+      "reference_output": "⚠️ B1G4 Alert! Myntra style on Ajio prices. Shop now!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_007",
+      "task_type": "deal_copy",
+      "brand": "Zomato",
+      "category": "Food",
+      "discount": "Free Delivery + 50% Off",
+      "coupon_code": "ZOMSAFETY",
+      "channel": "WhatsApp",
+      "language": "telugu",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Andhra Pradesh",
+        "festival": "Ugadi",
+        "device": "android"
+      },
+      "reference_output": "ఉగాది పచ్చడితో పాటు మీ ఫేవరెట్ ఫుడ్! 🥘 ZOMSAFETY వాడండి, ఉచిత డెలివరీ మరియు 50% తగ్గింపు పొందండి. హ్యాపీ ఉగాది!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_008",
+      "task_type": "deal_copy",
+      "brand": "Nykaa",
+      "category": "Beauty",
+      "discount": "Expired: 80% Off",
+      "coupon_code": "NYK80",
+      "channel": "SMS",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 120
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "Nykaa Sale alert! ₹2000 tak ki bachat. Check out newest arrivals and save big.",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_009",
+      "task_type": "deal_copy",
+      "brand": "Croma",
+      "category": "Appliances",
+      "discount": "10% off using HDFC",
+      "coupon_code": "HDFC10",
+      "channel": "Glance",
+      "language": "english",
+      "constraints": {
+        "max_chars": 35
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "National",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "10% HDFC Discount at Croma! ⚡",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_010",
+      "task_type": "deal_copy",
+      "brand": "Amazon India",
+      "category": "Mobile",
+      "discount": "₹5000 Exchange Bonus",
+      "coupon_code": "EXCHANGE5K",
+      "channel": "Push notification",
+      "language": "telugu",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Telangana",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": {
+        "title": "మీ పాత ఫోన్ కి సరైన ధర! 📲",
+        "body": "Amazon లో పాత ఫోన్ ఇచ్చి కొత్తది కొనండి. ₹5000 ఎక్స్ఛేంజ్ బోనస్ పొందండి."
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_011",
+      "task_type": "deal_copy",
+      "brand": "TataCliq",
+      "category": "Luxury",
+      "discount": "15% off on Watches",
+      "coupon_code": "TIME15",
+      "channel": "Email subject",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 60
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "ios"
+      },
+      "reference_output": "प्रीमियम घड़ियों पर 15% की छूट - TataCliq Luxury ⌚",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_012",
+      "task_type": "deal_copy",
+      "brand": "Flipkart",
+      "category": "Electronics",
+      "discount": "UP TO 90% OFF",
+      "coupon_code": "BBD90",
+      "channel": "Push notification",
+      "language": "english",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "BBD",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": {
+        "title": "Flipkart BBD is Live! 🚀",
+        "body": "Deals start at ₹99. Grab accessories and more at up to 90% OFF. Shop now!"
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_013",
+      "task_type": "deal_copy",
+      "brand": "Zomato",
+      "category": "Food",
+      "discount": "Eid Special: Flat 100 Off",
+      "coupon_code": "EIDMUBARAK",
+      "channel": "WhatsApp",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "National",
+        "festival": "Eid",
+        "device": "android",
+        "golden_case": true
+      },
+      "reference_output": "ईद मुबारक! ✨ Zomato से मंगाएं पसंदीदा बिरयानी और पाएं ₹100 की छूट। कोड: EIDMUBARAK. अभी ऑर्डर करें!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_014",
+      "task_type": "deal_copy",
+      "brand": "Myntra",
+      "category": "Shoes",
+      "discount": "Flat 70% Off",
+      "coupon_code": "SNEAKER70",
+      "channel": "SMS",
+      "language": "telugu",
+      "constraints": {
+        "max_chars": 120
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Telangana",
+        "festival": "None",
+        "device": "ios"
+      },
+      "reference_output": "బ్రాండెడ్ షూస్ పై 70% తగ్గింపు! 👟 Myntra లో SNEAKER70 కోడ్ వాడి భారీగా ఆదా చేయండి.",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_015",
+      "task_type": "deal_copy",
+      "brand": "Swiggy Instamart",
+      "category": "Quick Commerce",
+      "discount": "Free Coconut Water",
+      "coupon_code": "SUMMERFREE",
+      "channel": "Glance",
+      "language": "english",
+      "constraints": {
+        "max_chars": 40
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "National",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "Free Coconut Water on Instamart! 🥥",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_016",
+      "task_type": "deal_copy",
+      "brand": "VeryVeryLongBrandNameEcommerceStoreIndiaPrivateLimited",
+      "category": "Bags",
+      "discount": "10% OFF",
+      "coupon_code": "SAVE10",
+      "channel": "SMS",
+      "language": "english",
+      "constraints": {
+        "max_chars": 120
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "Get 10% OFF at VeryVeryLongBrandName! Use SAVE10. Shop now for quality bags.",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_017",
+      "task_type": "deal_copy",
+      "brand": "Nykaa Beauty Store",
+      "category": "Makeup",
+      "discount": "₹500 OFF + Free Shipping",
+      "coupon_code": "BEAUTY500 / NYKFREESHIP",
+      "channel": "WhatsApp",
+      "language": "hinglish",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "ios",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "Bestie, Nykaa par loot machi hai! 💄 BEAUTY500 code use karein for ₹500 off and enjoy free shipping today only!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_018",
+      "task_type": "deal_copy",
+      "brand": "Ajio",
+      "category": "Fashion",
+      "discount": "Min 50% Off",
+      "coupon_code": "FIRSTBUY",
+      "channel": "Push notification",
+      "language": "telugu",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Telangana",
+        "festival": "None",
+        "device": "android",
+        "golden_case": true
+      },
+      "reference_output": {
+        "title": "Ajio లో అదిరిపోయే ఆఫర్! 👗",
+        "body": "కనీసం 50% తగ్గింపుతో ట్రెండీ ఫ్యాషన్ మీ సొంతం. FIRSTBUY కోడ్ వాడండి."
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_019",
+      "task_type": "deal_copy",
+      "brand": "BigBasket",
+      "category": "Vegetables",
+      "discount": "₹1 Potato Deal",
+      "coupon_code": "POTATO1",
+      "channel": "Glance",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 40
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "North",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "₹1 में आलू! BigBasket डील 🥔",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_020",
+      "task_type": "deal_copy",
+      "brand": "Amazon",
+      "category": "Books",
+      "discount": "Buy 2 Get 1 Free",
+      "coupon_code": "READMORE",
+      "channel": "Email subject",
+      "language": "english",
+      "constraints": {
+        "max_chars": 60
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "ios"
+      },
+      "reference_output": "📚 Book Lovers Rejoice: Buy 2 Get 1 FREE on Amazon!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_021",
+      "task_type": "deal_copy",
+      "brand": "Myntra",
+      "category": "Lifestyle",
+      "discount": "Flat 80% OFF",
+      "coupon_code": "ENDOFSEASON",
+      "channel": "Push notification",
+      "language": "english",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": {
+        "title": "80% OFF? Yes, please! 🤩",
+        "body": "The End of Season Sale is here. Use ENDOFSEASON on Myntra for insane discounts."
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_022",
+      "task_type": "deal_copy",
+      "brand": "Swiggy",
+      "category": "Food",
+      "discount": "60% OFF",
+      "coupon_code": "SWIGGY60",
+      "channel": "WhatsApp",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "Swiggy par 60% off! 🥘 SWIGGY60 code use karein aur maze se khayein. Limited time deal!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_023",
+      "task_type": "deal_copy",
+      "brand": "Flipkart",
+      "category": "Mobiles",
+      "discount": "₹15,000 OFF on S24",
+      "coupon_code": "GALAXY15K",
+      "channel": "SMS",
+      "language": "telugu",
+      "constraints": {
+        "max_chars": 120
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Andhra Pradesh",
+        "festival": "None",
+        "device": "ios"
+      },
+      "reference_output": "Samsung S24 పై ₹15,000 భారీ తగ్గింపు! 📱 Flipkart లో GALAXY15K కోడ్ వాడండి.",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_024",
+      "task_type": "deal_copy",
+      "brand": "Croma",
+      "category": "Laptops",
+      "discount": "Up to ₹20,000 Off",
+      "coupon_code": "STUDENTDEAL",
+      "channel": "Email subject",
+      "language": "english",
+      "constraints": {
+        "max_chars": 60
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "Back to College! 💻 Up to ₹20,000 Off on Laptops at Croma",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_025",
+      "task_type": "deal_copy",
+      "brand": "Zomato",
+      "category": "Dining",
+      "discount": "Flat 50% Off on Pro",
+      "coupon_code": "ZOMATOPRO",
+      "channel": "Push notification",
+      "language": "english",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": {
+        "title": "Get Zomato Pro at 50% OFF! 💎",
+        "body": "Eat out like a king. Exclusive 50% discount for you. Use code ZOMATOPRO."
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_026",
+      "task_type": "deal_copy",
+      "brand": "Nykaa",
+      "category": "Skincare",
+      "discount": "Buy 2 Get 2 Free",
+      "coupon_code": "B2G2FREE",
+      "channel": "WhatsApp",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "ios"
+      },
+      "reference_output": "स्किनकेयर का जादू! ✨ Nykaa पर Buy 2 Get 2 Free का शानदार ऑफर। कोड: B2G2FREE. ग्लो करने का समय है!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_027",
+      "task_type": "deal_copy",
+      "brand": "BigBasket",
+      "category": "Groceries",
+      "discount": "50% OFF on Fruits",
+      "coupon_code": "FRUIT50",
+      "channel": "SMS",
+      "language": "telugu",
+      "constraints": {
+        "max_chars": 120
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Telangana",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "తాజా పండ్లు ఇప్పుడు సగం ధరకే! 🍎 BigBasket లో FRUIT50 వాడి 50% ఆదా చేయండి.",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_028",
+      "task_type": "deal_copy",
+      "brand": "TataCliq",
+      "category": "Electronics",
+      "discount": "Expired Offer: 50% OFF",
+      "coupon_code": "TATA50",
+      "channel": "Glance",
+      "language": "english",
+      "constraints": {
+        "max_chars": 40
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "TataCliq: Electronics Sale is On! ⚡",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_029",
+      "task_type": "deal_copy",
+      "brand": "Flipkart",
+      "category": "Kitchen",
+      "discount": "Min 40% Off",
+      "coupon_code": "COOKWARE40",
+      "channel": "Push notification",
+      "language": "hindi",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "ios"
+      },
+      "reference_output": {
+        "title": "किचन का नया लुक! 🍳",
+        "body": "Flipkart पर कुकवेयर सेट पर कम से कम 40% की छूट। कोड COOKWARE40 का उपयोग करें।"
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_030",
+      "task_type": "deal_copy",
+      "brand": "Ajio",
+      "category": "Fashion",
+      "discount": "Up to 90% Off",
+      "coupon_code": "FLASH90",
+      "channel": "SMS",
+      "language": "english",
+      "constraints": {
+        "max_chars": 120
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "Flash Sale! ⚡ Up to 90% Off on top brands at Ajio. Use FLASH90. Hurry, stock flying fast!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_031",
+      "task_type": "deal_copy",
+      "brand": "Amazon Pay",
+      "category": "Fintech",
+      "discount": "Flat ₹50 Cashback",
+      "coupon_code": "RECHARGE50",
+      "channel": "WhatsApp",
+      "language": "telugu",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "National",
+        "festival": "None",
+        "device": "ios"
+      },
+      "reference_output": "మీ మొబైల్ రీఛార్జ్ పై ₹50 క్యాష్‌బ్యాక్! 📱 Amazon Pay లో RECHARGE50 కోడ్ వాడండి. ఇప్పుడే రీఛార్జ్ చేసుకోండి!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_032",
+      "task_type": "deal_copy",
+      "brand": "Myntra",
+      "category": "Beauty",
+      "discount": "Buy 1 Get 1 Free",
+      "coupon_code": "B1G1BEAUTY",
+      "channel": "Glance",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 40
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "National",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "Myntra B1G1 ब्यूटी डील! 💄",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_033",
+      "task_type": "deal_copy",
+      "brand": "Swiggy",
+      "category": "Food",
+      "discount": "Flat 150 OFF",
+      "coupon_code": "PARTY150",
+      "channel": "Email subject",
+      "language": "english",
+      "constraints": {
+        "max_chars": 60
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "ios",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "Weekend Party? 🍕 Flat ₹150 OFF on Swiggy!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_034",
+      "task_type": "deal_copy",
+      "brand": "Zomato",
+      "category": "Food",
+      "discount": "100% OFF (Up to ₹50)",
+      "coupon_code": "FREE50",
+      "channel": "Push notification",
+      "language": "hindi",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": {
+        "title": "मुफ़्त खाना? हाँ! 🍔",
+        "body": "Zomato पर FREE50 कोड का उपयोग करें और ₹50 तक 100% की छूट पाएं। अभी ऑर्डर करें!"
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_035",
+      "task_type": "deal_copy",
+      "brand": "Flipkart",
+      "category": "Furniture",
+      "discount": "Flat 30% Off",
+      "coupon_code": "HOME30",
+      "channel": "WhatsApp",
+      "language": "telugu",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Telangana",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "మీ ఇంటికి కొత్త కళ! 🪑 Flipkart లో ఫర్నీచర్ పై ఫ్లాట్ 30% తగ్గింపు. HOME30 కోడ్ వాడండి. ఇప్పుడే షాపింగ్ చేయండి!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_036",
+      "task_type": "deal_copy",
+      "brand": "Croma",
+      "category": "Audio",
+      "discount": "Buy Earbuds @ ₹999",
+      "coupon_code": "AUDIO999",
+      "channel": "SMS",
+      "language": "english",
+      "constraints": {
+        "max_chars": 120
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "National",
+        "festival": "None",
+        "device": "ios"
+      },
+      "reference_output": "Premium Audio for just ₹999! 🎧 Use AUDIO999 at Croma. Offer valid till tonight.",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_037",
+      "task_type": "deal_copy",
+      "brand": "Amazon",
+      "category": "Pantry",
+      "discount": "Flat 25% Off",
+      "coupon_code": "PANTRY25",
+      "channel": "Glance",
+      "language": "telugu",
+      "constraints": {
+        "max_chars": 40
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "Andhra Pradesh",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "Amazon: గ్రాసరీస్ పై 25% ఆఫ్! 🛒",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_038",
+      "task_type": "deal_copy",
+      "brand": "Nykaa",
+      "category": "Fragrance",
+      "discount": "Min 30% OFF",
+      "coupon_code": "SCENT30",
+      "channel": "Email subject",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 60
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "खुशबू जो दिल जीत ले! ✨ Nykaa पर परफ्यूम पर 30% की छूट",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_039",
+      "task_type": "deal_copy",
+      "brand": "Ajio",
+      "category": "Ethnic Wear",
+      "discount": "Flat 50% OFF",
+      "coupon_code": "FESTIVE50",
+      "channel": "Push notification",
+      "language": "telugu",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Telangana",
+        "festival": "Sankranti",
+        "device": "ios"
+      },
+      "reference_output": {
+        "title": "సంక్రాంతి సంబరాలు Ajio తో! 🥻",
+        "body": "ఎత్నిక్ వేర్ పై ఫ్లాట్ 50% తగ్గింపు. FESTIVE50 కోడ్ వాడి పండగ జరుపుకోండి."
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_040",
+      "task_type": "deal_copy",
+      "brand": "BigBasket",
+      "category": "Bakery",
+      "discount": "Flat 40% Off",
+      "coupon_code": "CAKE40",
+      "channel": "WhatsApp",
+      "language": "english",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "region": "National",
+        "festival": "None",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "Craving something sweet? 🍰 Get Flat 40% OFF on all Bakery items at BigBasket! Use CAKE40. Order now!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_041",
+      "task_type": "deal_copy",
+      "brand": "TataCliq",
+      "category": "Footwear",
+      "discount": "Flat ₹1000 OFF",
+      "coupon_code": "CLIQ1000",
+      "channel": "SMS",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 120
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "region": "National",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "TataCliq पर जूतों पर ₹1000 की छूट! 👟 कोड CLIQ1000 का उपयोग करें और आज ही अपनी बचत करें।",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_042",
+      "task_type": "deal_copy",
+      "brand": "Myntra",
+      "category": "Bags",
+      "discount": "Min 60% Off",
+      "coupon_code": "BAG60",
+      "channel": "Glance",
+      "language": "english",
+      "constraints": {
+        "max_chars": 40
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "ios",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "Min 60% OFF on Bags! Shop Myntra.",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_043",
+      "task_type": "deal_copy",
+      "brand": "Swiggy",
+      "category": "Gourmet",
+      "discount": "Flat 20% Off",
+      "coupon_code": "DELUXE20",
+      "channel": "Email subject",
+      "language": "telugu",
+      "constraints": {
+        "max_chars": 60
+      },
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "region": "Telangana",
+        "festival": "None",
+        "device": "android"
+      },
+      "reference_output": "మీ ఫేవరెట్ గూర్మే ఫుడ్ పై 20% ఆఫ్! 🍲 Swiggy ఆఫర్.",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_044",
+      "task_type": "deal_copy",
+      "brand": "Amazon",
+      "category": "Gaming",
+      "discount": "₹3000 OFF on PS5",
+      "coupon_code": "PLAYSTATION",
+      "channel": "Push notification",
+      "language": "english",
+      "constraints": {
+        "title_max_chars": 50,
+        "body_max_chars": 100
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "None",
+        "device": "ios",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": {
+        "title": "Level Up with PS5! 🎮",
+        "body": "Get ₹3000 OFF on your favorite console. Use code PLAYSTATION on Amazon. Limited stock!"
+      },
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    },
+    {
+      "id": "deal_045",
+      "task_type": "deal_copy",
+      "brand": "Flipkart",
+      "category": "Home Decor",
+      "discount": "UP TO 90% OFF",
+      "coupon_code": "DECOR90",
+      "channel": "WhatsApp",
+      "language": "hindi",
+      "constraints": {
+        "max_chars": 160
+      },
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "region": "National",
+        "festival": "Diwali",
+        "device": "android",
+        "expected_failure_modes": [
+          "char_limit_overflow",
+          "missing_coupon_code"
+        ]
+      },
+      "reference_output": "दिवाली सेल धमाका! 🪔 Flipkart पर होम डेकोर आइटम्स पर 90% तक की छूट। कोड: DECOR90. घर को आज ही सजाएं!",
+      "validation_rules": {
+        "must_include_coupon": true,
+        "must_include_discount": true,
+        "must_respect_char_limit": true
+      }
+    }
+  ],
+  "insurance_intent_classification": [
+    {
+      "id": "insurance_001",
+      "task_type": "insurance_intent",
+      "deal_category": "electronics",
+      "cart_value": 75000,
+      "user_age": 28,
+      "purchase_frequency": "high",
+      "travel_frequency": "medium",
+      "risk_profile": "moderate",
+      "user_location": "Mumbai",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "english",
+        "golden_case": true
+      },
+      "expected_label": "device_protection"
+    },
+    {
+      "id": "insurance_002",
+      "task_type": "insurance_intent",
+      "deal_category": "travel",
+      "cart_value": 12000,
+      "user_age": 35,
+      "purchase_frequency": "low",
+      "travel_frequency": "high",
+      "risk_profile": "low",
+      "user_location": "Delhi",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_label": "travel_insurance"
+    },
+    {
+      "id": "insurance_003",
+      "task_type": "insurance_intent",
+      "deal_category": "healthcare",
+      "cart_value": 1500,
+      "user_age": 45,
+      "purchase_frequency": "high",
+      "travel_frequency": "low",
+      "risk_profile": "high",
+      "user_location": "Bangalore",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_label": "health_micro"
+    },
+    {
+      "id": "insurance_004",
+      "task_type": "insurance_intent",
+      "deal_category": "electronics",
+      "cart_value": 3500,
+      "user_age": 22,
+      "purchase_frequency": "medium",
+      "travel_frequency": "medium",
+      "risk_profile": "moderate",
+      "user_location": "Hyderabad",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "telugu",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "accidental_damage"
+    },
+    {
+      "id": "insurance_005",
+      "task_type": "insurance_intent",
+      "deal_category": "fashion",
+      "cart_value": 5000,
+      "user_age": 25,
+      "purchase_frequency": "high",
+      "travel_frequency": "low",
+      "risk_profile": "low",
+      "user_location": "Pune",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "english"
+      },
+      "expected_label": "no_insurance"
+    },
+    {
+      "id": "insurance_006",
+      "task_type": "insurance_intent",
+      "deal_category": "gaming",
+      "cart_value": 45000,
+      "user_age": 19,
+      "purchase_frequency": "medium",
+      "travel_frequency": "low",
+      "risk_profile": "high",
+      "user_location": "Chennai",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_label": "device_protection"
+    },
+    {
+      "id": "insurance_007",
+      "task_type": "insurance_intent",
+      "deal_category": "appliances",
+      "cart_value": 25000,
+      "user_age": 55,
+      "purchase_frequency": "low",
+      "travel_frequency": "low",
+      "risk_profile": "moderate",
+      "user_location": "Kolkata",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "hindi"
+      },
+      "expected_label": "accidental_damage"
+    },
+    {
+      "id": "insurance_008",
+      "task_type": "insurance_intent",
+      "deal_category": "travel",
+      "cart_value": 2500,
+      "user_age": 30,
+      "purchase_frequency": "high",
+      "travel_frequency": "high",
+      "risk_profile": "moderate",
+      "user_location": "Ahmedabad",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "travel_insurance"
+    },
+    {
+      "id": "insurance_009",
+      "task_type": "insurance_intent",
+      "deal_category": "groceries",
+      "cart_value": 8000,
+      "user_age": 40,
+      "purchase_frequency": "very high",
+      "travel_frequency": "low",
+      "risk_profile": "low",
+      "user_location": "Jaipur",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "no_insurance",
+      "expected_confidence_range": [
+        0.45,
+        0.6
+      ]
+    },
+    {
+      "id": "insurance_010",
+      "task_type": "insurance_intent",
+      "deal_category": "electronics",
+      "cart_value": 120000,
+      "user_age": 65,
+      "purchase_frequency": "low",
+      "travel_frequency": "low",
+      "risk_profile": "high",
+      "user_location": "Surat",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "device_protection"
+    },
+    {
+      "id": "insurance_011",
+      "task_type": "insurance_intent",
+      "deal_category": "healthcare",
+      "cart_value": 500,
+      "user_age": 20,
+      "purchase_frequency": "medium",
+      "travel_frequency": "medium",
+      "risk_profile": "low",
+      "user_location": "Lucknow",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_label": "health_micro"
+    },
+    {
+      "id": "insurance_012",
+      "task_type": "insurance_intent",
+      "deal_category": "gaming",
+      "cart_value": 2000,
+      "user_age": 18,
+      "purchase_frequency": "high",
+      "travel_frequency": "low",
+      "risk_profile": "high",
+      "user_location": "Bhopal",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_label": "accidental_damage"
+    },
+    {
+      "id": "insurance_013",
+      "task_type": "insurance_intent",
+      "deal_category": "groceries",
+      "cart_value": 15000,
+      "user_age": 38,
+      "purchase_frequency": "high",
+      "travel_frequency": "low",
+      "risk_profile": "low",
+      "user_location": "Visakhapatnam",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "telugu",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "no_insurance"
+    },
+    {
+      "id": "insurance_014",
+      "task_type": "insurance_intent",
+      "deal_category": "travel",
+      "cart_value": 55000,
+      "user_age": 32,
+      "purchase_frequency": "medium",
+      "travel_frequency": "very high",
+      "risk_profile": "high",
+      "user_location": "Coimbatore",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "english"
+      },
+      "expected_label": "travel_insurance"
+    },
+    {
+      "id": "insurance_015",
+      "task_type": "insurance_intent",
+      "deal_category": "appliances",
+      "cart_value": 85000,
+      "user_age": 42,
+      "purchase_frequency": "low",
+      "travel_frequency": "medium",
+      "risk_profile": "moderate",
+      "user_location": "Indore",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "hindi"
+      },
+      "expected_label": "device_protection"
+    },
+    {
+      "id": "insurance_016",
+      "task_type": "insurance_intent",
+      "deal_category": "fashion",
+      "cart_value": 1200,
+      "user_age": 24,
+      "purchase_frequency": "high",
+      "travel_frequency": "low",
+      "risk_profile": "low",
+      "user_location": "Chandigarh",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "english"
+      },
+      "expected_label": "no_insurance"
+    },
+    {
+      "id": "insurance_017",
+      "task_type": "insurance_intent",
+      "deal_category": "healthcare",
+      "cart_value": 3500,
+      "user_age": 50,
+      "purchase_frequency": "high",
+      "travel_frequency": "low",
+      "risk_profile": "moderate",
+      "user_location": "Thiruvananthapuram",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_label": "health_micro"
+    },
+    {
+      "id": "insurance_018",
+      "task_type": "insurance_intent",
+      "deal_category": "electronics",
+      "cart_value": 500,
+      "user_age": 21,
+      "purchase_frequency": "very high",
+      "travel_frequency": "medium",
+      "risk_profile": "high",
+      "user_location": "Patna",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "accidental_damage"
+    },
+    {
+      "id": "insurance_019",
+      "task_type": "insurance_intent",
+      "deal_category": "travel",
+      "cart_value": 850,
+      "user_age": 29,
+      "purchase_frequency": "high",
+      "travel_frequency": "high",
+      "risk_profile": "low",
+      "user_location": "Madurai",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "travel_insurance",
+      "expected_confidence_range": [
+        0.45,
+        0.6
+      ]
+    },
+    {
+      "id": "insurance_020",
+      "task_type": "insurance_intent",
+      "deal_category": "groceries",
+      "cart_value": 25000,
+      "user_age": 35,
+      "purchase_frequency": "low",
+      "travel_frequency": "low",
+      "risk_profile": "low",
+      "user_location": "Raipur",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "no_insurance"
+    },
+    {
+      "id": "insurance_021",
+      "task_type": "insurance_intent",
+      "deal_category": "gaming",
+      "cart_value": 5500,
+      "user_age": 26,
+      "purchase_frequency": "medium",
+      "travel_frequency": "low",
+      "risk_profile": "high",
+      "user_location": "Nagpur",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_label": "accidental_damage"
+    },
+    {
+      "id": "insurance_022",
+      "task_type": "insurance_intent",
+      "deal_category": "appliances",
+      "cart_value": 15000,
+      "user_age": 48,
+      "purchase_frequency": "low",
+      "travel_frequency": "low",
+      "risk_profile": "moderate",
+      "user_location": "Nashik",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "hindi"
+      },
+      "expected_label": "device_protection"
+    },
+    {
+      "id": "insurance_023",
+      "task_type": "insurance_intent",
+      "deal_category": "fashion",
+      "cart_value": 25000,
+      "user_age": 31,
+      "purchase_frequency": "high",
+      "travel_frequency": "medium",
+      "risk_profile": "low",
+      "user_location": "Aurangabad",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "english"
+      },
+      "expected_label": "no_insurance"
+    },
+    {
+      "id": "insurance_024",
+      "task_type": "insurance_intent",
+      "deal_category": "healthcare",
+      "cart_value": 8500,
+      "user_age": 60,
+      "purchase_frequency": "high",
+      "travel_frequency": "low",
+      "risk_profile": "high",
+      "user_location": "Srinagar",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "hindi"
+      },
+      "expected_label": "health_micro"
+    },
+    {
+      "id": "insurance_025",
+      "task_type": "insurance_intent",
+      "deal_category": "electronics",
+      "cart_value": 4500,
+      "user_age": 23,
+      "purchase_frequency": "medium",
+      "travel_frequency": "low",
+      "risk_profile": "moderate",
+      "user_location": "Gwalior",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "accidental_damage",
+      "expected_confidence_range": [
+        0.45,
+        0.6
+      ]
+    },
+    {
+      "id": "insurance_026",
+      "task_type": "insurance_intent",
+      "deal_category": "travel",
+      "cart_value": 3500,
+      "user_age": 27,
+      "purchase_frequency": "high",
+      "travel_frequency": "high",
+      "risk_profile": "low",
+      "user_location": "Vijayawada",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "telugu"
+      },
+      "expected_label": "travel_insurance"
+    },
+    {
+      "id": "insurance_027",
+      "task_type": "insurance_intent",
+      "deal_category": "groceries",
+      "cart_value": 450,
+      "user_age": 44,
+      "purchase_frequency": "very high",
+      "travel_frequency": "low",
+      "risk_profile": "low",
+      "user_location": "Jodhpur",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_label": "no_insurance"
+    },
+    {
+      "id": "insurance_028",
+      "task_type": "insurance_intent",
+      "deal_category": "gaming",
+      "cart_value": 120000,
+      "user_age": 30,
+      "purchase_frequency": "medium",
+      "travel_frequency": "low",
+      "risk_profile": "high",
+      "user_location": "Mysore",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_label": "device_protection"
+    },
+    {
+      "id": "insurance_029",
+      "task_type": "insurance_intent",
+      "deal_category": "appliances",
+      "cart_value": 5000,
+      "user_age": 52,
+      "purchase_frequency": "low",
+      "travel_frequency": "low",
+      "risk_profile": "moderate",
+      "user_location": "Guwahati",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "accidental_damage"
+    },
+    {
+      "id": "insurance_030",
+      "task_type": "insurance_intent",
+      "deal_category": "fashion",
+      "cart_value": 850,
+      "user_age": 19,
+      "purchase_frequency": "high",
+      "travel_frequency": "low",
+      "risk_profile": "low",
+      "user_location": "Ranchi",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_label": "no_insurance"
+    },
+    {
+      "id": "insurance_031",
+      "task_type": "insurance_intent",
+      "deal_category": "healthcare",
+      "cart_value": 12000,
+      "user_age": 36,
+      "purchase_frequency": "high",
+      "travel_frequency": "low",
+      "risk_profile": "moderate",
+      "user_location": "Hubli",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_label": "health_micro"
+    },
+    {
+      "id": "insurance_032",
+      "task_type": "insurance_intent",
+      "deal_category": "electronics",
+      "cart_value": 1500,
+      "user_age": 22,
+      "purchase_frequency": "very high",
+      "travel_frequency": "medium",
+      "risk_profile": "high",
+      "user_location": "Salem",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "accidental_damage"
+    },
+    {
+      "id": "insurance_033",
+      "task_type": "insurance_intent",
+      "deal_category": "travel",
+      "cart_value": 125000,
+      "user_age": 41,
+      "purchase_frequency": "low",
+      "travel_frequency": "high",
+      "risk_profile": "high",
+      "user_location": "Varansi",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_label": "travel_insurance"
+    },
+    {
+      "id": "insurance_034",
+      "task_type": "insurance_intent",
+      "deal_category": "groceries",
+      "cart_value": 1200,
+      "user_age": 28,
+      "purchase_frequency": "very high",
+      "travel_frequency": "low",
+      "risk_profile": "low",
+      "user_location": "Guntur",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "telugu"
+      },
+      "expected_label": "no_insurance"
+    },
+    {
+      "id": "insurance_035",
+      "task_type": "insurance_intent",
+      "deal_category": "gaming",
+      "cart_value": 35000,
+      "user_age": 24,
+      "purchase_frequency": "medium",
+      "travel_frequency": "low",
+      "risk_profile": "high",
+      "user_location": "Noida",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "hindi"
+      },
+      "expected_label": "device_protection"
+    },
+    {
+      "id": "insurance_036",
+      "task_type": "insurance_intent",
+      "deal_category": "appliances",
+      "cart_value": 1200,
+      "user_age": 33,
+      "purchase_frequency": "low",
+      "travel_frequency": "low",
+      "risk_profile": "moderate",
+      "user_location": "Allahabad",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "accidental_damage"
+    },
+    {
+      "id": "insurance_037",
+      "task_type": "insurance_intent",
+      "deal_category": "fashion",
+      "cart_value": 55000,
+      "user_age": 37,
+      "purchase_frequency": "high",
+      "travel_frequency": "medium",
+      "risk_profile": "low",
+      "user_location": "Jammu",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_label": "no_insurance"
+    },
+    {
+      "id": "insurance_038",
+      "task_type": "insurance_intent",
+      "deal_category": "healthcare",
+      "cart_value": 450,
+      "user_age": 18,
+      "purchase_frequency": "medium",
+      "travel_frequency": "medium",
+      "risk_profile": "low",
+      "user_location": "Agartala",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "english"
+      },
+      "expected_label": "health_micro"
+    },
+    {
+      "id": "insurance_039",
+      "task_type": "insurance_intent",
+      "deal_category": "electronics",
+      "cart_value": 8500,
+      "user_age": 25,
+      "purchase_frequency": "medium",
+      "travel_frequency": "low",
+      "risk_profile": "moderate",
+      "user_location": "Amritsar",
+      "device_type": "ios",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "accidental_damage"
+    },
+    {
+      "id": "insurance_040",
+      "task_type": "insurance_intent",
+      "deal_category": "travel",
+      "cart_value": 1500,
+      "user_age": 29,
+      "purchase_frequency": "high",
+      "travel_frequency": "high",
+      "risk_profile": "low",
+      "user_location": "Warangal",
+      "device_type": "android",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "telugu",
+        "expected_failure_modes": [
+          "wrong_intent_classification",
+          "confidence_miscalibration"
+        ]
+      },
+      "expected_label": "travel_insurance"
+    }
+  ],
+  "credit_narrative_faithfulness": [
+    {
+      "id": "credit_001",
+      "task_type": "credit_narrative",
+      "business_category": "Quick Commerce",
+      "gmv_growth_yoy": 45.2,
+      "repeat_customer_rate": 68,
+      "monthly_transactions": 2500,
+      "late_payments": 0,
+      "avg_order_value": 450,
+      "customer_retention_rate": 72,
+      "refund_rate": 1.5,
+      "city": "Mumbai",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "english"
+      },
+      "expected_claims": [
+        "GMV grew 45.2% YoY",
+        "Repeat customer rate reached 68%",
+        "Monthly transactions exceeded 2000"
+      ]
+    },
+    {
+      "id": "credit_002",
+      "task_type": "credit_narrative",
+      "business_category": "Electronics Retail",
+      "gmv_growth_yoy": 12.5,
+      "repeat_customer_rate": 15,
+      "monthly_transactions": 150,
+      "late_payments": 4,
+      "avg_order_value": 18000,
+      "customer_retention_rate": 20,
+      "refund_rate": 8.2,
+      "city": "Delhi",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Refund rate is 8.2%",
+        "Avg order value is ₹18,000",
+        "Business recorded 4 late payments"
+      ]
+    },
+    {
+      "id": "credit_003",
+      "task_type": "credit_narrative",
+      "business_category": "Apparel",
+      "gmv_growth_yoy": -5.0,
+      "repeat_customer_rate": 40,
+      "monthly_transactions": 800,
+      "late_payments": 1,
+      "avg_order_value": 1200,
+      "customer_retention_rate": 35,
+      "refund_rate": 12.0,
+      "city": "Bangalore",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth was negative at -5.0%",
+        "Refund rate reached 12.0%",
+        "Monthly transactions were 800"
+      ]
+    },
+    {
+      "id": "credit_004",
+      "task_type": "credit_narrative",
+      "business_category": "Kirana Store",
+      "gmv_growth_yoy": 22.0,
+      "repeat_customer_rate": 85,
+      "monthly_transactions": 4500,
+      "late_payments": 0,
+      "avg_order_value": 320,
+      "customer_retention_rate": 90,
+      "refund_rate": 0.2,
+      "city": "Hyderabad",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "telugu",
+        "golden_case": true
+      },
+      "expected_claims": [
+        "Repeat customer rate is 85%",
+        "Customer retention rate reached 90%",
+        "Late payments are zero"
+      ]
+    },
+    {
+      "id": "credit_005",
+      "task_type": "credit_narrative",
+      "business_category": "Online Pharmacy",
+      "gmv_growth_yoy": 110.0,
+      "repeat_customer_rate": 55,
+      "monthly_transactions": 1200,
+      "late_payments": 0,
+      "avg_order_value": 850,
+      "customer_retention_rate": 60,
+      "refund_rate": 2.5,
+      "city": "Pune",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth exceeded 100% YoY",
+        "Avg order value is ₹850",
+        "Refund rate is 2.5%"
+      ]
+    },
+    {
+      "id": "credit_006",
+      "task_type": "credit_narrative",
+      "business_category": "Used Car Dealer",
+      "gmv_growth_yoy": 35.0,
+      "repeat_customer_rate": 5,
+      "monthly_transactions": 12,
+      "late_payments": 2,
+      "avg_order_value": 450000,
+      "customer_retention_rate": 8,
+      "refund_rate": 1.0,
+      "city": "Chennai",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_claims": [
+        "Monthly transactions are 12",
+        "Avg order value is ₹4,50,000",
+        "Business has 2 late payments"
+      ]
+    },
+    {
+      "id": "credit_007",
+      "task_type": "credit_narrative",
+      "business_category": "Jewelry Store",
+      "gmv_growth_yoy": 15.0,
+      "repeat_customer_rate": 25,
+      "monthly_transactions": 45,
+      "late_payments": 0,
+      "avg_order_value": 85000,
+      "customer_retention_rate": 30,
+      "refund_rate": 0.5,
+      "city": "Kolkata",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_claims": [
+        "GMV growth is 15.0%",
+        "Avg order value is ₹85,000",
+        "Refund rate is 0.5%"
+      ]
+    },
+    {
+      "id": "credit_008",
+      "task_type": "credit_narrative",
+      "business_category": "Software SaaS",
+      "gmv_growth_yoy": 88.0,
+      "repeat_customer_rate": 92,
+      "monthly_transactions": 300,
+      "late_payments": 0,
+      "avg_order_value": 15000,
+      "customer_retention_rate": 95,
+      "refund_rate": 0.1,
+      "city": "Ahmedabad",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Customer retention rate is 95%",
+        "Repeat customer rate is 92%",
+        "GMV growth reached 88.0% YoY"
+      ]
+    },
+    {
+      "id": "credit_009",
+      "task_type": "credit_narrative",
+      "business_category": "Furniture Store",
+      "gmv_growth_yoy": 5.0,
+      "repeat_customer_rate": 10,
+      "monthly_transactions": 85,
+      "late_payments": 12,
+      "avg_order_value": 35000,
+      "customer_retention_rate": 15,
+      "refund_rate": 4.5,
+      "city": "Lucknow",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Business recorded 12 late payments",
+        "Repeat customer rate is 10%",
+        "Refund rate is 4.5%"
+      ]
+    },
+    {
+      "id": "credit_010",
+      "task_type": "credit_narrative",
+      "business_category": "Tiffin Service",
+      "gmv_growth_yoy": 18.0,
+      "repeat_customer_rate": 95,
+      "monthly_transactions": 6000,
+      "late_payments": 0,
+      "avg_order_value": 120,
+      "customer_retention_rate": 98,
+      "refund_rate": 0.1,
+      "city": "Indore",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_claims": [
+        "Repeat customer rate is 95%",
+        "Monthly transactions reached 6000",
+        "Customer retention rate is 98%"
+      ]
+    },
+    {
+      "id": "credit_011",
+      "task_type": "credit_narrative",
+      "business_category": "Cosmetics Online",
+      "gmv_growth_yoy": 65.0,
+      "repeat_customer_rate": 50,
+      "monthly_transactions": 1500,
+      "late_payments": 0,
+      "avg_order_value": 1100,
+      "customer_retention_rate": 55,
+      "refund_rate": 3.2,
+      "city": "Chandigarh",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_claims": [
+        "GMV growth is 65.0%",
+        "Refund rate is 3.2%",
+        "Monthly transactions reached 1500"
+      ]
+    },
+    {
+      "id": "credit_012",
+      "task_type": "credit_narrative",
+      "business_category": "Mobile Repair Shop",
+      "gmv_growth_yoy": 2.0,
+      "repeat_customer_rate": 20,
+      "monthly_transactions": 400,
+      "late_payments": 5,
+      "avg_order_value": 2500,
+      "customer_retention_rate": 18,
+      "refund_rate": 1.5,
+      "city": "Bhopal",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Business has 5 late payments",
+        "GMV growth is 2.0%",
+        "Avg order value is ₹2,500"
+      ]
+    },
+    {
+      "id": "credit_013",
+      "task_type": "credit_narrative",
+      "business_category": "Coffee Roasters",
+      "gmv_growth_yoy": 30.0,
+      "repeat_customer_rate": 60,
+      "monthly_transactions": 900,
+      "late_payments": 0,
+      "avg_order_value": 750,
+      "customer_retention_rate": 65,
+      "refund_rate": 0.5,
+      "city": "Visakhapatnam",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "telugu"
+      },
+      "expected_claims": [
+        "Repeat customer rate is 60%",
+        "GMV growth is 30.0%",
+        "Refund rate is 0.5%"
+      ]
+    },
+    {
+      "id": "credit_014",
+      "task_type": "credit_narrative",
+      "business_category": "Organic Grocery",
+      "gmv_growth_yoy": 55.0,
+      "repeat_customer_rate": 78,
+      "monthly_transactions": 3200,
+      "late_payments": 1,
+      "avg_order_value": 650,
+      "customer_retention_rate": 82,
+      "refund_rate": 0.8,
+      "city": "Surat",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV grew 55.0% YoY",
+        "Repeat customer rate is 78%",
+        "Refund rate is below 1% at 0.8%"
+      ]
+    },
+    {
+      "id": "credit_015",
+      "task_type": "credit_narrative",
+      "business_category": "Pet Supplies",
+      "gmv_growth_yoy": 42.0,
+      "repeat_customer_rate": 45,
+      "monthly_transactions": 1100,
+      "late_payments": 0,
+      "avg_order_value": 1800,
+      "customer_retention_rate": 50,
+      "refund_rate": 2.1,
+      "city": "Coimbatore",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "english"
+      },
+      "expected_claims": [
+        "GMV growth reached 42.0%",
+        "Avg order value is ₹1,800",
+        "Monthly transactions reached 1100"
+      ]
+    },
+    {
+      "id": "credit_016",
+      "task_type": "credit_narrative",
+      "business_category": "Gym Equipment Store",
+      "gmv_growth_yoy": 10.0,
+      "repeat_customer_rate": 5,
+      "monthly_transactions": 60,
+      "late_payments": 3,
+      "avg_order_value": 25000,
+      "customer_retention_rate": 10,
+      "refund_rate": 5.0,
+      "city": "Nagpur",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Refund rate is 5.0%",
+        "Avg order value is ₹25,000",
+        "Monthly transactions are 60"
+      ]
+    },
+    {
+      "id": "credit_017",
+      "task_type": "credit_narrative",
+      "business_category": "Ayurvedic Products",
+      "gmv_growth_yoy": 75.0,
+      "repeat_customer_rate": 62,
+      "monthly_transactions": 2200,
+      "late_payments": 0,
+      "avg_order_value": 1450,
+      "customer_retention_rate": 68,
+      "refund_rate": 1.2,
+      "city": "Thiruvananthapuram",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_claims": [
+        "GMV grew by 75.0%",
+        "Repeat customer rate is 62%",
+        "Refund rate is 1.2%"
+      ]
+    },
+    {
+      "id": "credit_018",
+      "task_type": "credit_narrative",
+      "business_category": "Second Hand Books",
+      "gmv_growth_yoy": -12.0,
+      "repeat_customer_rate": 30,
+      "monthly_transactions": 250,
+      "late_payments": 8,
+      "avg_order_value": 450,
+      "customer_retention_rate": 25,
+      "refund_rate": 0.5,
+      "city": "Patna",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth is negative at -12.0%",
+        "Business has 8 late payments",
+        "Repeat customer rate is 30%"
+      ]
+    },
+    {
+      "id": "credit_019",
+      "task_type": "credit_narrative",
+      "business_category": "Artisan Chocolates",
+      "gmv_growth_yoy": 28.0,
+      "repeat_customer_rate": 48,
+      "monthly_transactions": 600,
+      "late_payments": 0,
+      "avg_order_value": 1200,
+      "customer_retention_rate": 52,
+      "refund_rate": 0.2,
+      "city": "Madurai",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "telugu"
+      },
+      "expected_claims": [
+        "GMV growth reached 28.0%",
+        "Repeat customer rate is 48%",
+        "Refund rate is 0.2%"
+      ]
+    },
+    {
+      "id": "credit_020",
+      "task_type": "credit_narrative",
+      "business_category": "Electronic Repairs",
+      "gmv_growth_yoy": 0.0,
+      "repeat_customer_rate": 15,
+      "monthly_transactions": 0,
+      "late_payments": 25,
+      "avg_order_value": 0,
+      "customer_retention_rate": 0,
+      "refund_rate": 0.0,
+      "city": "Raipur",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Monthly transactions are 0",
+        "Late payments reached 25",
+        "GMV growth is 0.0%"
+      ]
+    },
+    {
+      "id": "credit_021",
+      "task_type": "credit_narrative",
+      "business_category": "Toy Store Online",
+      "gmv_growth_yoy": 40.0,
+      "repeat_customer_rate": 35,
+      "monthly_transactions": 950,
+      "late_payments": 0,
+      "avg_order_value": 1350,
+      "customer_retention_rate": 38,
+      "refund_rate": 2.8,
+      "city": "Jodhpur",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_claims": [
+        "GMV growth is 40.0%",
+        "Monthly transactions reached 950",
+        "Refund rate is 2.8%"
+      ]
+    },
+    {
+      "id": "credit_022",
+      "task_type": "credit_narrative",
+      "business_category": "Luxury Watch Dealer",
+      "gmv_growth_yoy": 150.0,
+      "repeat_customer_rate": 12,
+      "monthly_transactions": 25,
+      "late_payments": 0,
+      "avg_order_value": 250000,
+      "customer_retention_rate": 15,
+      "refund_rate": 0.5,
+      "city": "Gurgaon",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV grew by 150.0% YoY",
+        "Avg order value is ₹2,50,000",
+        "Repeat customer rate is 12%"
+      ]
+    },
+    {
+      "id": "credit_023",
+      "task_type": "credit_narrative",
+      "business_category": "Specialty Tea Store",
+      "gmv_growth_yoy": 33.0,
+      "repeat_customer_rate": 58,
+      "monthly_transactions": 750,
+      "late_payments": 0,
+      "avg_order_value": 980,
+      "customer_retention_rate": 62,
+      "refund_rate": 0.4,
+      "city": "Guwahati",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_claims": [
+        "GMV growth reached 33.0%",
+        "Repeat customer rate is 58%",
+        "Refund rate is 0.4%"
+      ]
+    },
+    {
+      "id": "credit_024",
+      "task_type": "credit_narrative",
+      "business_category": "Sports Nutrition",
+      "gmv_growth_yoy": 68.0,
+      "repeat_customer_rate": 82,
+      "monthly_transactions": 1900,
+      "late_payments": 0,
+      "avg_order_value": 2200,
+      "customer_retention_rate": 85,
+      "refund_rate": 1.5,
+      "city": "Nashik",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Repeat customer rate reached 82%",
+        "GMV growth is 68.0% YoY",
+        "Customer retention rate reached 85%"
+      ]
+    },
+    {
+      "id": "credit_025",
+      "task_type": "credit_narrative",
+      "business_category": "Local Boutique",
+      "gmv_growth_yoy": 12.0,
+      "repeat_customer_rate": 45,
+      "monthly_transactions": 300,
+      "late_payments": 2,
+      "avg_order_value": 4500,
+      "customer_retention_rate": 48,
+      "refund_rate": 4.0,
+      "city": "Gwalior",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_claims": [
+        "Avg order value is ₹4,500",
+        "Repeat customer rate is 45%",
+        "Refund rate is 4.0%"
+      ]
+    },
+    {
+      "id": "credit_026",
+      "task_type": "credit_narrative",
+      "business_category": "Hardware Store",
+      "gmv_growth_yoy": 8.0,
+      "repeat_customer_rate": 65,
+      "monthly_transactions": 1100,
+      "late_payments": 0,
+      "avg_order_value": 2800,
+      "customer_retention_rate": 70,
+      "refund_rate": 0.2,
+      "city": "Vijayawada",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "telugu"
+      },
+      "expected_claims": [
+        "Repeat customer rate is 65%",
+        "Monthly transactions reached 1100",
+        "GMV growth is 8.0%"
+      ]
+    },
+    {
+      "id": "credit_027",
+      "task_type": "credit_narrative",
+      "business_category": "Eco-friendly Home",
+      "gmv_growth_yoy": 52.0,
+      "repeat_customer_rate": 40,
+      "monthly_transactions": 850,
+      "late_payments": 1,
+      "avg_order_value": 1650,
+      "customer_retention_rate": 45,
+      "refund_rate": 1.8,
+      "city": "Patna",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth is 52.0%",
+        "Repeat customer rate is 40%",
+        "Refund rate is 1.8%"
+      ]
+    },
+    {
+      "id": "credit_028",
+      "task_type": "credit_narrative",
+      "business_category": "Mobile Accessories",
+      "gmv_growth_yoy": 95.0,
+      "repeat_customer_rate": 25,
+      "monthly_transactions": 5000,
+      "late_payments": 0,
+      "avg_order_value": 350,
+      "customer_retention_rate": 30,
+      "refund_rate": 6.5,
+      "city": "Aurangabad",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Monthly transactions reached 5000",
+        "GMV grew by 95.0% YoY",
+        "Refund rate is 6.5%"
+      ]
+    },
+    {
+      "id": "credit_029",
+      "task_type": "credit_narrative",
+      "business_category": "Baking Studio",
+      "gmv_growth_yoy": 22.0,
+      "repeat_customer_rate": 70,
+      "monthly_transactions": 450,
+      "late_payments": 0,
+      "avg_order_value": 1500,
+      "customer_retention_rate": 75,
+      "refund_rate": 0.5,
+      "city": "Thane",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "english"
+      },
+      "expected_claims": [
+        "Repeat customer rate reached 70%",
+        "Avg order value is ₹1,500",
+        "GMV growth is 22.0%"
+      ]
+    },
+    {
+      "id": "credit_030",
+      "task_type": "credit_narrative",
+      "business_category": "Used Furniture Dealer",
+      "gmv_growth_yoy": 15.0,
+      "repeat_customer_rate": 5,
+      "monthly_transactions": 30,
+      "late_payments": 6,
+      "avg_order_value": 12000,
+      "customer_retention_rate": 8,
+      "refund_rate": 2.5,
+      "city": "Patna",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Business has 6 late payments",
+        "Avg order value is ₹12,000",
+        "Repeat customer rate is 5%"
+      ]
+    },
+    {
+      "id": "credit_031",
+      "task_type": "credit_narrative",
+      "business_category": "Custom Gift Shop",
+      "gmv_growth_yoy": 45.0,
+      "repeat_customer_rate": 35,
+      "monthly_transactions": 700,
+      "late_payments": 0,
+      "avg_order_value": 850,
+      "customer_retention_rate": 40,
+      "refund_rate": 1.5,
+      "city": "Ranchi",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "hindi"
+      },
+      "expected_claims": [
+        "GMV grew by 45.0%",
+        "Monthly transactions reached 700",
+        "Refund rate is 1.5%"
+      ]
+    },
+    {
+      "id": "credit_032",
+      "task_type": "credit_narrative",
+      "business_category": "Pet Grooming",
+      "gmv_growth_yoy": 38.0,
+      "repeat_customer_rate": 85,
+      "monthly_transactions": 400,
+      "late_payments": 0,
+      "avg_order_value": 1100,
+      "customer_retention_rate": 88,
+      "refund_rate": 0.1,
+      "city": "Mysore",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Repeat customer rate reached 85%",
+        "Customer retention rate is 88%",
+        "GMV growth is 38.0%"
+      ]
+    },
+    {
+      "id": "credit_033",
+      "task_type": "credit_narrative",
+      "business_category": "Ethnic Clothing",
+      "gmv_growth_yoy": 10.0,
+      "repeat_customer_rate": 30,
+      "monthly_transactions": 1200,
+      "late_payments": 0,
+      "avg_order_value": 3500,
+      "customer_retention_rate": 35,
+      "refund_rate": 10.5,
+      "city": "Warangal",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "telugu",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Refund rate reached 10.5%",
+        "Monthly transactions are 1200",
+        "Avg order value is ₹3,500"
+      ]
+    },
+    {
+      "id": "credit_034",
+      "task_type": "credit_narrative",
+      "business_category": "Gadget Store",
+      "gmv_growth_yoy": 120.0,
+      "repeat_customer_rate": 20,
+      "monthly_transactions": 850,
+      "late_payments": 0,
+      "avg_order_value": 22000,
+      "customer_retention_rate": 25,
+      "refund_rate": 4.2,
+      "city": "Srinagar",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth exceeded 100% at 120.0%",
+        "Avg order value is ₹22,000",
+        "Refund rate reached 4.2%"
+      ]
+    },
+    {
+      "id": "credit_035",
+      "task_type": "credit_narrative",
+      "business_category": "Organic Honey",
+      "gmv_growth_yoy": 15.0,
+      "repeat_customer_rate": 55,
+      "monthly_transactions": 600,
+      "late_payments": 0,
+      "avg_order_value": 450,
+      "customer_retention_rate": 60,
+      "refund_rate": 0.5,
+      "city": "Allahabad",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_claims": [
+        "Repeat customer rate is 55%",
+        "GMV growth is 15.0%",
+        "Refund rate is 0.5%"
+      ]
+    },
+    {
+      "id": "credit_036",
+      "task_type": "credit_narrative",
+      "business_category": "Vinyl Records",
+      "gmv_growth_yoy": 50.0,
+      "repeat_customer_rate": 22,
+      "monthly_transactions": 150,
+      "late_payments": 0,
+      "avg_order_value": 2800,
+      "customer_retention_rate": 25,
+      "refund_rate": 1.2,
+      "city": "Salem",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_claims": [
+        "GMV growth reached 50.0%",
+        "Avg order value is ₹2,800",
+        "Monthly transactions are 150"
+      ]
+    },
+    {
+      "id": "credit_037",
+      "task_type": "credit_narrative",
+      "business_category": "Leather Goods",
+      "gmv_growth_yoy": 18.0,
+      "repeat_customer_rate": 35,
+      "monthly_transactions": 450,
+      "late_payments": 1,
+      "avg_order_value": 3200,
+      "customer_retention_rate": 40,
+      "refund_rate": 2.5,
+      "city": "Agartala",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_claims": [
+        "GMV grew by 18.0%",
+        "Repeat customer rate is 35%",
+        "Avg order value reached ₹3,200"
+      ]
+    },
+    {
+      "id": "credit_038",
+      "task_type": "credit_narrative",
+      "business_category": "Home Decor Online",
+      "gmv_growth_yoy": 72.0,
+      "repeat_customer_rate": 28,
+      "monthly_transactions": 1800,
+      "late_payments": 0,
+      "avg_order_value": 1950,
+      "customer_retention_rate": 32,
+      "refund_rate": 4.5,
+      "city": "Amritsar",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "medium",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV grew by 72.0% YoY",
+        "Monthly transactions reached 1800",
+        "Refund rate is 4.5%"
+      ]
+    },
+    {
+      "id": "credit_039",
+      "task_type": "credit_narrative",
+      "business_category": "Specialty Coffee",
+      "gmv_growth_yoy": 44.0,
+      "repeat_customer_rate": 65,
+      "monthly_transactions": 1200,
+      "late_payments": 0,
+      "avg_order_value": 850,
+      "customer_retention_rate": 70,
+      "refund_rate": 0.3,
+      "city": "Guntur",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "telugu"
+      },
+      "expected_claims": [
+        "Repeat customer rate reached 65%",
+        "GMV grew by 44.0%",
+        "Monthly transactions reached 1200"
+      ]
+    },
+    {
+      "id": "credit_040",
+      "task_type": "credit_narrative",
+      "business_category": "Electronics Resale",
+      "gmv_growth_yoy": 15.0,
+      "repeat_customer_rate": 10,
+      "monthly_transactions": 500,
+      "late_payments": 15,
+      "avg_order_value": 8500,
+      "customer_retention_rate": 12,
+      "refund_rate": 5.5,
+      "city": "Noida",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Business recorded 15 late payments",
+        "Refund rate reached 5.5%",
+        "Repeat customer rate is low at 10%"
+      ]
+    },
+    {
+      "id": "credit_041",
+      "task_type": "credit_narrative",
+      "business_category": "Handmade Jewelry",
+      "gmv_growth_yoy": 25.0,
+      "repeat_customer_rate": 40,
+      "monthly_transactions": 350,
+      "late_payments": 0,
+      "avg_order_value": 2500,
+      "customer_retention_rate": 45,
+      "refund_rate": 1.0,
+      "city": "Varanasi",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_claims": [
+        "GMV growth is 25.0%",
+        "Repeat customer rate is 40%",
+        "Refund rate is 1.0%"
+      ]
+    },
+    {
+      "id": "credit_042",
+      "task_type": "credit_narrative",
+      "business_category": "Online Gaming Store",
+      "gmv_growth_yoy": 90.0,
+      "repeat_customer_rate": 15,
+      "monthly_transactions": 2500,
+      "late_payments": 0,
+      "avg_order_value": 450,
+      "customer_retention_rate": 20,
+      "refund_rate": 0.1,
+      "city": "Jammu",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth reached 90.0%",
+        "Monthly transactions reached 2500",
+        "Refund rate is 0.1%"
+      ]
+    },
+    {
+      "id": "credit_043",
+      "task_type": "credit_narrative",
+      "business_category": "Fitness Apparel",
+      "gmv_growth_yoy": 58.0,
+      "repeat_customer_rate": 52,
+      "monthly_transactions": 900,
+      "late_payments": 0,
+      "avg_order_value": 1850,
+      "customer_retention_rate": 56,
+      "refund_rate": 3.5,
+      "city": "Hubli",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_claims": [
+        "GMV grew by 58.0% YoY",
+        "Repeat customer rate is 52%",
+        "Refund rate reached 3.5%"
+      ]
+    },
+    {
+      "id": "credit_044",
+      "task_type": "credit_narrative",
+      "business_category": "Customized Cakes",
+      "gmv_growth_yoy": 20.0,
+      "repeat_customer_rate": 75,
+      "monthly_transactions": 150,
+      "late_payments": 0,
+      "avg_order_value": 2500,
+      "customer_retention_rate": 80,
+      "refund_rate": 0.5,
+      "city": "Shimla",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "easy",
+        "language": "hindi"
+      },
+      "expected_claims": [
+        "Repeat customer rate reached 75%",
+        "Customer retention rate is 80%",
+        "GMV growth is 20.0%"
+      ]
+    },
+    {
+      "id": "credit_045",
+      "task_type": "credit_narrative",
+      "business_category": "Solar Tech Store",
+      "gmv_growth_yoy": 115.0,
+      "repeat_customer_rate": 5,
+      "monthly_transactions": 80,
+      "late_payments": 0,
+      "avg_order_value": 45000,
+      "customer_retention_rate": 8,
+      "refund_rate": 1.5,
+      "city": "Rajkot",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth reached 115.0%",
+        "Avg order value is ₹45,000",
+        "Monthly transactions reached 80"
+      ]
+    },
+    {
+      "id": "credit_046",
+      "task_type": "credit_narrative",
+      "business_category": "Used Smartphones",
+      "gmv_growth_yoy": 10.0,
+      "repeat_customer_rate": 8,
+      "monthly_transactions": 300,
+      "late_payments": 12,
+      "avg_order_value": 12500,
+      "customer_retention_rate": 10,
+      "refund_rate": 7.8,
+      "city": "Patna",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Business has 12 late payments",
+        "Refund rate is 7.8%",
+        "Repeat customer rate is 8%"
+      ]
+    },
+    {
+      "id": "credit_047",
+      "task_type": "credit_narrative",
+      "business_category": "Art Supplies",
+      "gmv_growth_yoy": 35.0,
+      "repeat_customer_rate": 42,
+      "monthly_transactions": 650,
+      "late_payments": 0,
+      "avg_order_value": 1150,
+      "customer_retention_rate": 45,
+      "refund_rate": 1.2,
+      "city": "Udaipur",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "hindi"
+      },
+      "expected_claims": [
+        "GMV growth is 35.0%",
+        "Repeat customer rate reached 42%",
+        "Refund rate is 1.2%"
+      ]
+    },
+    {
+      "id": "credit_048",
+      "task_type": "credit_narrative",
+      "business_category": "Smart Home Store",
+      "gmv_growth_yoy": 66.0,
+      "repeat_customer_rate": 18,
+      "monthly_transactions": 400,
+      "late_payments": 0,
+      "avg_order_value": 6500,
+      "customer_retention_rate": 22,
+      "refund_rate": 2.2,
+      "city": "Kochi",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "english"
+      },
+      "expected_claims": [
+        "GMV grew by 66.0% YoY",
+        "Avg order value is ₹6,500",
+        "Refund rate is 2.2%"
+      ]
+    },
+    {
+      "id": "credit_049",
+      "task_type": "credit_narrative",
+      "business_category": "Gourmet Spices",
+      "gmv_growth_yoy": 28.0,
+      "repeat_customer_rate": 68,
+      "monthly_transactions": 950,
+      "late_payments": 0,
+      "avg_order_value": 550,
+      "customer_retention_rate": 72,
+      "refund_rate": 0.4,
+      "city": "Nellore",
+      "metadata": {
+        "adversarial": false,
+        "difficulty": "medium",
+        "language": "telugu"
+      },
+      "expected_claims": [
+        "Repeat customer rate is 68%",
+        "GMV growth reached 28.0%",
+        "Refund rate is 0.4%"
+      ]
+    },
+    {
+      "id": "credit_050",
+      "task_type": "credit_narrative",
+      "business_category": "Gadget Repairs",
+      "gmv_growth_yoy": -2.0,
+      "repeat_customer_rate": 12,
+      "monthly_transactions": 150,
+      "late_payments": 9,
+      "avg_order_value": 3500,
+      "customer_retention_rate": 15,
+      "refund_rate": 4.5,
+      "city": "Patna",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "hindi",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth is negative at -2.0%",
+        "Business recorded 9 late payments",
+        "Refund rate reached 4.5%"
+      ]
+    },
+    {
+      "id": "credit_051",
+      "task_type": "credit_narrative",
+      "business_category": "Electronics Resale",
+      "gmv_growth_yoy": 220.0,
+      "repeat_customer_rate": 3,
+      "monthly_transactions": 0,
+      "late_payments": 18,
+      "avg_order_value": 85000,
+      "customer_retention_rate": 2,
+      "refund_rate": 35.0,
+      "city": "Delhi",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth reached 220.0%",
+        "Late payments reached 18",
+        "Refund rate is 35.0%"
+      ]
+    },
+    {
+      "id": "credit_052",
+      "task_type": "credit_narrative",
+      "business_category": "Luxury Sneaker Resale",
+      "gmv_growth_yoy": 180.0,
+      "repeat_customer_rate": 5,
+      "monthly_transactions": 4,
+      "late_payments": 11,
+      "avg_order_value": 125000,
+      "customer_retention_rate": 4,
+      "refund_rate": 28.0,
+      "city": "Mumbai",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth reached 180.0%",
+        "Refund rate is 28.0%",
+        "Late payments reached 11"
+      ]
+    },
+    {
+      "id": "credit_053",
+      "task_type": "credit_narrative",
+      "business_category": "Crypto Mining Hardware",
+      "gmv_growth_yoy": 310.0,
+      "repeat_customer_rate": 2,
+      "monthly_transactions": 1,
+      "late_payments": 22,
+      "avg_order_value": 250000,
+      "customer_retention_rate": 1,
+      "refund_rate": 42.0,
+      "city": "Bangalore",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth reached 310.0%",
+        "Refund rate is 42.0%",
+        "Monthly transactions are 1"
+      ]
+    },
+    {
+      "id": "credit_054",
+      "task_type": "credit_narrative",
+      "business_category": "Imported Electronics",
+      "gmv_growth_yoy": 145.0,
+      "repeat_customer_rate": 8,
+      "monthly_transactions": 9,
+      "late_payments": 14,
+      "avg_order_value": 98000,
+      "customer_retention_rate": 6,
+      "refund_rate": 19.0,
+      "city": "Hyderabad",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "Late payments reached 14",
+        "Refund rate is 19.0%",
+        "GMV growth reached 145.0%"
+      ]
+    },
+    {
+      "id": "credit_055",
+      "task_type": "credit_narrative",
+      "business_category": "Flash Sale Marketplace",
+      "gmv_growth_yoy": 260.0,
+      "repeat_customer_rate": 6,
+      "monthly_transactions": 15,
+      "late_payments": 17,
+      "avg_order_value": 65000,
+      "customer_retention_rate": 5,
+      "refund_rate": 31.0,
+      "city": "Noida",
+      "metadata": {
+        "adversarial": true,
+        "difficulty": "hard",
+        "language": "english",
+        "expected_failure_modes": [
+          "hallucination",
+          "unsupported_claim"
+        ]
+      },
+      "expected_claims": [
+        "GMV growth reached 260.0%",
+        "Refund rate is 31.0%",
+        "Late payments reached 17"
+      ]
+    }
+  ]
+}
