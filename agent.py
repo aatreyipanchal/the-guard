@@ -24,9 +24,18 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
 from errors import (
     APIRateLimitError, APITimeoutError, APIServerError,
-    BudgetExceededError, ScoringError, EvalError
+    BudgetExceededError, TokenBudgetExceededError, ScoringError, EvalError
+)
+from scorer.scorer import (
+    score_exact, score_semantic, score_json_match,
+    score_format_compliance, score_intent_match,
+    score_factual_grounding, score_llm_judge,
+    ScorerResult
 )
 
 logger = logging.getLogger("the_guard.agent")
@@ -94,7 +103,6 @@ class BudgetGuard:
                 test_id=test_id,
             )
         if total_tokens >= self.max_tokens:
-            from errors import TokenBudgetExceededError
             raise TokenBudgetExceededError(
                 f"Token budget exceeded: {total_tokens:,} >= {self.max_tokens:,}",
                 test_id=test_id,
@@ -133,11 +141,6 @@ class ToolRegistry:
 
 def build_tool_registry() -> ToolRegistry:
     """Build and return the default tool registry with all scorers registered."""
-    from scorer.scorer import (
-        score_exact, score_semantic, score_json_match,
-        score_format_compliance, score_intent_match,
-        score_factual_grounding, score_llm_judge,
-    )
     registry = ToolRegistry()
     registry.register("exact",              score_exact,              "Exact string match (classification)")
     registry.register("semantic",           score_semantic,           "Cosine similarity via sentence embeddings (summarisation)")
@@ -172,8 +175,10 @@ class EvalAgent:
         self.budget      = budget or BudgetGuard()
         self.registry    = build_tool_registry()
 
-    def run(self, run_id: str) -> AgentState:
+    def run(self, run_id: str, **kwargs) -> AgentState:
         state = AgentState(run_id=run_id)
+        for k, v in kwargs.items():
+            setattr(state, k, v)
 
         try:
             self._phase_plan(state)
@@ -208,24 +213,33 @@ class EvalAgent:
     def _phase_act(self, state: AgentState) -> None:
         state.transition(Phase.ACT)
         tc_map = {tc.id: tc for tc in self.test_cases}
+        
+        state_lock = threading.Lock()
+        max_workers = 5 
 
         for provider in self.providers:
             pname = provider.name
             state.responses[pname] = []
             test_ids = state.plan.get(pname, [])
 
-            for test_id in test_ids:
+            def _worker(test_id):
                 resp = self._run_one_test(provider, tc_map[test_id], state)
-                state.responses[pname].append(resp)
+                
+                # SABOTAGE MODE for Demo: if simulate_regression is on, drop accuracy for insurance
+                if getattr(state, "simulate_regression", False) and tc_map[test_id].task_type == "insurance_intent":
+                    import random
+                    if random.random() > 0.5:
+                        resp.actual = "corrupted_output_for_demo"
 
-                # Budget check after every test
-                state.total_cost_usd += resp.cost_usd
-                state.total_tokens   += resp.total_tokens
-                self.budget.check(state.total_cost_usd, state.total_tokens, test_id=test_id)
+                with state_lock:
+                    state.responses[pname].append(resp)
+                    state.total_cost_usd += resp.cost_usd
+                    state.total_tokens   += resp.total_tokens
+                    self.budget.check(state.total_cost_usd, state.total_tokens, test_id=test_id)
+                return resp
 
-                request_gap_seconds = getattr(provider, "request_gap_seconds", 0.0)
-                if request_gap_seconds > 0:
-                    time.sleep(request_gap_seconds)
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                list(executor.map(_worker, test_ids))
 
     def _run_one_test(self, provider, tc, state: AgentState):
         """Run a single test with typed-error-aware retry."""
@@ -265,7 +279,6 @@ class EvalAgent:
                 tc = tc_map[resp.test_id]
 
                 if not resp.succeeded:
-                    from scorer.scorer import ScorerResult
                     result = ScorerResult(
                         test_id=tc.id, provider=pname, scoring_method=tc.scoring_method,
                         score=0.0, passed=False, expected=tc.expected, actual="",
@@ -280,7 +293,6 @@ class EvalAgent:
                             actual=resp.output, expected=tc.expected,
                         )
                     except (KeyError, ScoringError) as e:
-                        from scorer.scorer import ScorerResult
                         result = ScorerResult(
                             test_id=tc.id, provider=pname, scoring_method=tc.scoring_method,
                             score=0.0, passed=False, expected=tc.expected, actual=resp.output,

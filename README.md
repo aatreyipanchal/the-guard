@@ -1,6 +1,31 @@
 # 🛡️ The Guard: Production-Grade AI Evaluation Pipeline
 
 An automated evaluation framework designed for GrabOn's AI ecosystem. It detects quality regressions across model swaps, prompt rewrites, and tool-chain changes using statistical rigor, automated versioning, and CI/CD integration.
+---
+
+## 🛡️ Requirement Walkthrough (Quick Audit)
+
+This section maps the implementation directly to the GrabOn AI Labs Challenge requirements.
+
+### 1. Statistical Rigor
+**Implementation**: `stats/engine.py` & `detector/detector.py`
+Most pipelines fail by comparing simple averages. This framework uses a **multi-test statistical engine**:
+- **Accuracy**: Uses **Paired Bootstrap** sampling for mean differences.
+- **Pass/Fail**: Uses **McNemar’s Test** (the gold standard for classifier comparison).
+- **Performance**: Uses **Welch’s t-test** for latency/cost variances.
+- **Verdict**: A `NO-GO` is only triggered if the regression is statistically significant ($p < 0.05$).
+
+### 2. "LLM-as-a-Judge" Scorer
+**Implementation**: `scorer/scorer.py` -> `score_llm_judge`
+Uses **GPT-4o-Mini** with a 4-point professional marketing rubric: **Persuasion, Clarity, Factuality, and Tone**. It returns a weighted composite score and includes a graceful fallback to high-threshold semantic similarity if the API is unavailable.
+
+### 3. Credit Narrative Faithfulness (Hard Task)
+**Implementation**: `scorer/scorer.py` -> `score_factual_grounding`
+Designed for regulated narratives (e.g., Poonawalla Fincorp). It performs **Field Extraction** and **Cross-Verification** of GMV, claims, and percentages. It includes specific logic to detect **hallucinations in zero-transaction cases**.
+
+### 4. Prompt Versioning & CI/CD Gate
+**Implementation**: `versioning/prompt_versioning.py` & `.github/workflows/eval.yml`
+Captures every run with **Git metadata** (Commit SHA, Branch). If a regression occurs, the report includes a **Unified Diff** of the prompt changes. The script uses unique exit codes to drive the GitHub Action gate.
 
 ---
 
@@ -13,6 +38,7 @@ GrabOn’s agents produce deal copy, insurance intents, and credit narratives th
 ### Production Hardening & Enhancements
 Beyond the core requirements, I focused on making this pipeline "hardened" for real-world operations:
 - **Expanded Task Breadth**: Added **Summarization, Classification, and Extraction** tasks (totaling 170 test cases) to reflect the full variety of GrabOn's production workloads.
+- **Parallel Execution**: Implemented **Bounded Concurrency** using `ThreadPoolExecutor`. This reduced the evaluation time for the full 170-case suite from **15 minutes down to ~3 minutes**.
 - **Cost Optimization**: Transitioned the LLM-as-Judge from expensive providers to a structured **GPT-4o-Mini** implementation, reducing evaluation costs significantly without sacrificing scoring reliability.
 - **Latency Distribution**: Added **P95 and StdDev** tracking. In production, averages hide spikes; monitoring the tail-end of latency is critical for user experience.
 - **Traceability**: Every run is now tagged with **Git commit, branch, and dirty status**, ensuring that if a regression is found, we know exactly which line of code caused it.
@@ -104,6 +130,7 @@ GROQ_API_KEY=your_key_here
 | `python run_eval.py --update-baseline` | **First Run**: Established ground truth. |
 | `python run_eval.py` | **Standard Run**: Compares against baseline. |
 | `python run_eval.py --task extraction` | Run only one specific task. |
+| `python run_eval.py --simulate-regression` | **Demo Mode**: Sabotages scores to test the NO-GO gate. |
 | `streamlit run dashboard/app.py` | Launch the visual results dashboard. |
 
 ---

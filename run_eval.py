@@ -116,29 +116,40 @@ def compute_task_cost_breakdown(responses: list[ProviderResponse], test_cases: l
 
 
 def print_summary_table(provider_name: str, responses: list, scores_list: list, test_cases: list) -> None:
-    table = Table(title=f"{provider_name.upper()} — Per-test results", show_lines=False)
-    table.add_column("ID",      style="dim",  width=12)
-    table.add_column("Type",    style="cyan", width=18)
-    table.add_column("Method",  style="dim",  width=16)
+    table = Table(
+        title=f"{provider_name.upper()} — Summary (See reports for full 170+ cases)", 
+        show_lines=False,
+        box=None
+    )
+    table.add_column("ID",      style="dim", width=10)
+    table.add_column("Type",    style="cyan")
     table.add_column("Score",   justify="right")
     table.add_column("Pass",    justify="center")
     table.add_column("Latency", justify="right", style="dim")
-    table.add_column("Cost $",  justify="right", style="dim")
 
     tc_map   = {tc.id: tc for tc in test_cases}
     resp_map = {r.test_id: r for r in responses}
 
-    for s in scores_list:
+    # If too many cases, show a truncated view in console
+    display_limit = 20
+    if len(scores_list) > display_limit:
+        display_scores = scores_list[:15] + [None] + scores_list[-5:]
+    else:
+        display_scores = scores_list
+
+    for s in display_scores:
+        if s is None:
+            table.add_row("...", "...", "...", "...", "...")
+            continue
+            
         tc   = tc_map.get(s.test_id)
         resp = resp_map.get(s.test_id)
         table.add_row(
             s.test_id,
             tc.task_type if tc else "—",
-            s.scoring_method,
-            f"{s.score:.3f}",
+            f"{s.score:.2f}",
             "[green]✓[/green]" if s.passed else "[red]✗[/red]",
             f"{resp.latency_ms:.0f}ms" if resp else "—",
-            f"{resp.cost_usd:.6f}"     if resp else "—",
         )
     console.print(table)
 
@@ -196,7 +207,7 @@ def main():
         _simulate_bad_prompt()
 
     providers = build_providers(args.provider)
-    if not providers:
+    if not providers and not args.dry_run:
         console.print("[red]No providers available. Set at least one API key in .env[/red]")
         sys.exit(1)
 
@@ -221,7 +232,9 @@ def main():
 
     budget = BudgetGuard(max_cost_usd=args.max_cost)
     agent  = EvalAgent(providers, test_cases, budget=budget)
-    state  = agent.run(run_id)
+    
+    # Pass simulation flag if requested
+    state  = agent.run(run_id, simulate_regression=args.simulate_regression)
 
     if state.aborted:
         console.print(f"[bold red]🚨 Agent ABORTED: {state.abort_reason}[/bold red]")

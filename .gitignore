@@ -175,8 +175,10 @@ config.json
 __pycache__/
 
 # Eval artifacts
-baselines/*.json
-reports/*.json
-reports/*.md
+!baselines/*.json
 
+reports/
+history/
+!history/prompts/
+logs/
 tmp_*/

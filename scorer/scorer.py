@@ -9,6 +9,9 @@ from typing import Any, Optional
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from openai import OpenAI
+
+from errors import ScoringError
 
 
 SEMANTIC_THRESHOLD = 0.75
@@ -565,15 +568,24 @@ def score_factual_grounding(
 
 
 _LLM_JUDGE_PROMPT = """
-You are a senior GrabOn marketing reviewer.
+You are an expert Marketing Compliance Officer at GrabOn.
+Your task is to evaluate AI-generated deal copy against a reference offer.
 
-Score this deal copy on:
-1. persuasion
-2. clarity
-3. factuality
-4. tone
+### Scoring Rubric (0.0 to 1.0):
+1. **Persuasion**: Does it use compelling language that encourages clicks without being "spammy"?
+2. **Clarity**: Is the offer immediately understandable? Is the coupon code clear?
+3. **Factuality**: Does it strictly follow the discount and brand details from the reference? (Penalty for hallucination)
+4. **Tone**: Does it match the professional yet exciting GrabOn brand voice?
 
-Return ONLY valid JSON.
+### Output Format:
+Return ONLY a JSON object with this structure:
+{
+  "persuasion": float,
+  "clarity": float,
+  "factuality": float,
+  "tone": float,
+  "reasoning": "brief explanation"
+}
 """
 
 
@@ -585,8 +597,6 @@ def _call_judge_api(actual: str, reference: str):
         return None
 
     try:
-        from openai import OpenAI
-
         client = OpenAI(api_key=api_key)
 
         resp = client.chat.completions.create(
@@ -706,8 +716,6 @@ def score(
     expected: Any,
     scoring_method: str,
 ) -> ScorerResult:
-
-    from errors import ScoringError
 
     try:
 
