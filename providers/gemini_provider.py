@@ -1,10 +1,3 @@
-"""
-Google Gemini provider — gemini-2.5-flash-lite for cost efficiency.
-Pricing (2025): $0.075 / 1M input, $0.30 / 1M output.
-
-Deliberate model choice: Flash over Pro. Used for: shadow testing + cross-validation.
-Cheapest hosted frontier model — validates that regression isn't provider-specific.
-"""
 import os
 import time
 import google.generativeai as genai

@@ -177,8 +177,11 @@ __pycache__/
 # Eval artifacts
 !baselines/*.json
 
-reports/
 history/
 !history/prompts/
 logs/
 tmp_*/
+
+reports/*
+!reports/sample_run.json
+!reports/sample_run.md

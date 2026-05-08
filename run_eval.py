@@ -1,31 +1,3 @@
-"""
-run_eval.py — The Guard eval pipeline entrypoint.
-
-Usage:
-  python run_eval.py                        # run full eval vs baseline
-  python run_eval.py --update-baseline      # run eval + save as new baseline
-  python run_eval.py --provider openai      # run only one provider
-  python run_eval.py --provider groq        # run Groq (LLaMA-3) — cheapest
-  python run_eval.py --task deal_copy       # run only one task type
-  python run_eval.py --dry-run              # validate setup without API calls
-  python run_eval.py --simulate-regression  # inject bad prompt to test the gate
-
-Exit codes:
-  0 — GO (no regressions)
-  1 — NO-GO (regressions detected — CI blocks merge)
-  2 — INCONCLUSIVE (insufficient data, human review required)
-
-Multi-LLM cost rationale (documented for reviewers):
-  Provider   | Model             | Best for                     | $/1M tokens
-  -----------|-------------------|------------------------------|-------------
-  OpenAI     | gpt-4o-mini       | deal_copy, credit_narrative  | $0.15 in
-  Gemini     | gemini-1.5-flash  | shadow testing, cross-val    | $0.075 in
-  Groq       | llama3-8b-8192    | classification, intent tasks | $0.05 in
-  Haiku      | claude-haiku-*    | LLM-as-judge (cheap oracle)  | $0.80 in
-
-Shadow testing: Groq runs same cases as OpenAI → quantify per-task cost tradeoff.
-"""
-
 import argparse
 import logging
 import sys

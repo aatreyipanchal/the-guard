@@ -1,6 +1,3 @@
-"""
-providers/groq_provider.py — Groq (LLaMA-3) provider.
-"""
 import os
 import time
 import random

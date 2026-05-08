@@ -28,8 +28,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 from errors import (
-    APIRateLimitError, APITimeoutError, APIServerError,
-    BudgetExceededError, TokenBudgetExceededError, ScoringError, EvalError
+    BudgetExceededError, TokenBudgetExceededError, ScoringError
 )
 from scorer.scorer import (
     score_exact, score_semantic, score_json_match,
@@ -66,12 +65,12 @@ class AgentState:
     run_id: str
     phase: Phase = Phase.PLAN
     phase_history: list = field(default_factory=list)
-    plan: dict = field(default_factory=dict)       # {provider_name: [test_ids]}
-    responses: dict = field(default_factory=dict)   # {provider_name: [ProviderResponse]}
-    scores: dict = field(default_factory=dict)      # {provider_name: [ScorerResult]}
+    plan: dict = field(default_factory=dict)      
+    responses: dict = field(default_factory=dict)   
+    scores: dict = field(default_factory=dict)     
     total_cost_usd: float = 0.0
     total_tokens: int = 0
-    errors: list = field(default_factory=list)      # [(test_id, error_type, msg)]
+    errors: list = field(default_factory=list)      
     aborted: bool = False
     abort_reason: str = ""
 

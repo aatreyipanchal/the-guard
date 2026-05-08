@@ -1,22 +1,3 @@
-"""
-golden_suite.py — GrabOn eval pipeline test suite.
-
-SOURCE OF TRUTH: tests.json (170 cases total)
-  - deal_copy_generation:            45 cases (4 channels, 3 languages, adversarial)
-  - insurance_intent_classification: 40 cases (5 labels, confidence calibration)
-  - credit_narrative_faithfulness:   55 cases (adversarial, edge cases, neg GMV)
-  - summarization:                   10 cases (multi-provider cross-val)
-  - classification:                   10 cases (customer intent sorting)
-  - extraction:                       10 cases (structured JSON data)
-
-VALIDATION FIXES applied during integration (see full list at bottom of file):
-  1. Insurance labels changed from old set to new tests.json set
-  2. Multi-coupon codes handled (deal_005, deal_017)
-  3. Adversarial expired-offer cases flagged (deal_008, deal_028)
-  4. Credit edge cases: zero txns, negative GMV, extreme refund rates
-  5. Confidence calibration metadata preserved for 3 insurance cases
-"""
-
 import json
 from pathlib import Path
 from typing import Any, Literal

@@ -1,10 +1,3 @@
-"""
-OpenAI provider — gpt-4o-mini for cost efficiency during evals.
-Pricing (2025): $0.15 / 1M input tokens, $0.60 / 1M output tokens.
-
-Deliberate model choice: gpt-4o-mini over gpt-4o saves ~97% cost.
-Used for: deal_copy + credit_narrative (quality-sensitive tasks).
-"""
 import os
 import time
 from openai import OpenAI

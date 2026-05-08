@@ -1,20 +1,3 @@
-"""
-Statistical engine for The Guard eval pipeline.
-
-Compares current eval run against a saved baseline and flags regressions
-using statistically rigorous methods:
-
-  - Accuracy / score distributions → Paired bootstrap + p-value
-  - Pass/fail classification     → McNemar's test
-  - Latency / cost               → Welch's t-test
-
-A regression is flagged when:
-  1. The metric degrades beyond the configured threshold, AND
-  2. The degradation is statistically significant (p < ALPHA)
-
-This prevents noisy single-run results from triggering false alarms.
-"""
-
 from dataclasses import dataclass, field
 import numpy as np
 from scipy import stats

@@ -1,12 +1,9 @@
-"""Scoring functions for The Guard eval pipeline."""
-
 import json
 import os
 import re
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from openai import OpenAI
