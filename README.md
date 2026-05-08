@@ -53,7 +53,7 @@ Beyond the core requirements, I focused on making this pipeline "hardened" for r
 
 ### 📊 Evaluation Tasks
 
-#### Core Requirements (GrabOn Challenge)
+#### Core Requirements
 - **Deal Copy Generation**: Multi-channel marketing copy (English, Hindi, Telugu, Hinglish).
 - **Insurance Intent Classification**: 5-label classification for micro-insurance products.
 - **Credit Narrative Faithfulness**: Factual grounding check for regulated financial summaries.
