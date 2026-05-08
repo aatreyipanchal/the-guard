@@ -26,32 +26,46 @@ BASELINES_DIR.mkdir(exist_ok=True)
 @dataclass
 class RunSnapshot:
     """A snapshot of one eval run for a single provider."""
+
     provider: str
     model: str
     run_id: str
     timestamp: str
-    accuracy: list[float]          # per-test numerical scores
-    latency_ms: list[float]        # per-test latencies
-    cost_usd: list[float]          # per-test costs
-    passes: list[bool]             # per-test pass/fail values
+
+    accuracy: list[float]
+    latency_ms: list[float]
+    cost_usd: list[float]
+    passes: list[bool]
+
     pass_rate: float
     mean_accuracy: float
     mean_latency_ms: float
-    total_cost_usd: float
-    n_tests: int
+
+    p50_latency_ms: float = 0.0
+    p95_latency_ms: float = 0.0
+    latency_stddev_ms: float = 0.0
+
+    total_cost_usd: float = 0.0
+    n_tests: int = 0
+
     task_scores: dict[str, list[float]] = field(default_factory=dict)
     task_passes: dict[str, list[bool]] = field(default_factory=dict)
     task_cost_usd: dict[str, float] = field(default_factory=dict)
     task_latency_ms: dict[str, float] = field(default_factory=dict)
     task_counts: dict[str, int] = field(default_factory=dict)
     task_language_scores: dict[str, dict[str, list[float]]] = field(default_factory=dict)
+
+    testcase_results: list[dict] = field(default_factory=list)
+
     prompt_hash: str = ""
     prompt_version: str = ""
     git_commit: str = ""
     git_branch: str = ""
     prompt_diff: str = ""
+
     prompt_diffs_by_task: dict[str, str] = field(default_factory=dict)
     task_prompt_hashes: dict[str, str] = field(default_factory=dict)
+
     metadata: dict = field(default_factory=dict)
 
 
@@ -96,6 +110,10 @@ def load_baseline(provider: str) -> Optional[RunSnapshot]:
     data.setdefault("prompt_diffs_by_task", {})
     data.setdefault("task_prompt_hashes", {})
     data.setdefault("metadata", {})
+    data.setdefault("p50_latency_ms", 0.0)
+    data.setdefault("p95_latency_ms", 0.0)
+    data.setdefault("latency_stddev_ms", 0.0)
+    data.setdefault("testcase_results", [])
 
     return RunSnapshot(**data)
 
@@ -265,6 +283,8 @@ def build_snapshot(
     language_scores: dict[str, list[float]] = {}
     task_language_scores: dict[str, dict[str, list[float]]] = {}
 
+    testcase_results = []
+
     for r, resp in zip(scorer_results, provider_responses):
         tc = tc_map.get(r.test_id)
         task_type = tc.task_type if tc else "unknown"
@@ -277,6 +297,21 @@ def build_snapshot(
         language_scores.setdefault(language, []).append(r.score)
         task_language_scores.setdefault(task_type, {}).setdefault(language, []).append(r.score)
 
+        testcase_results.append({
+            "test_id": r.test_id,
+            "task_type": task_type,
+            "language": language,
+            "score": r.score,
+            "passed": r.passed,
+            "expected": r.expected,
+            "actual": r.actual,
+            "latency_ms": resp.latency_ms,
+            "cost_usd": resp.cost_usd,
+            "tokens": resp.total_tokens,
+            "error": resp.error,
+            "details": getattr(r, "details", {}),
+        })
+
     task_latency_ms = {
         task: float(np.mean(values)) if values else 0.0
         for task, values in task_latency.items()
@@ -287,31 +322,49 @@ def build_snapshot(
         model=model,
         run_id=run_id,
         timestamp=datetime.now(timezone.utc).isoformat(),
+
         accuracy=accuracy,
         latency_ms=latency_ms,
         cost_usd=cost_usd,
         passes=passes,
+
         pass_rate=sum(passes) / len(passes) if passes else 0.0,
         mean_accuracy=sum(accuracy) / len(accuracy) if accuracy else 0.0,
         mean_latency_ms=sum(latency_ms) / len(latency_ms) if latency_ms else 0.0,
+
+        p50_latency_ms=float(np.percentile(latency_ms, 50)) if latency_ms else 0.0,
+        p95_latency_ms=float(np.percentile(latency_ms, 95)) if latency_ms else 0.0,
+        latency_stddev_ms=float(np.std(latency_ms)) if latency_ms else 0.0,
+
         total_cost_usd=sum(cost_usd),
         n_tests=len(scorer_results),
+
         task_scores=task_scores,
         task_passes=task_passes,
         task_cost_usd=task_cost_usd,
         task_latency_ms=task_latency_ms,
         task_counts=task_counts,
         task_language_scores=task_language_scores,
+
+        testcase_results=testcase_results,
+
         prompt_hash=prompt_hash,
         prompt_version=prompt_version,
         git_commit=git_commit,
         git_branch=git_branch,
         prompt_diff=prompt_diff,
+
         prompt_diffs_by_task=prompt_diffs_by_task or {},
         task_prompt_hashes=task_prompt_hashes or {},
+
         metadata={
             **(metadata or {}),
             "language_scores": language_scores,
             "task_language_scores": task_language_scores,
+            "evaluation_config": {
+                "regression_significance_threshold": 0.05,
+                "confidence_level": 0.95,
+                "latency_percentile": 95,
+            },
         },
     )

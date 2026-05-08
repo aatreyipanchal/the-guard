@@ -40,11 +40,24 @@ def generate_json_report(
     suite_stats: dict,
     extra_meta: dict = {},
 ) -> Path:
+    overall_decision = (
+        "NO-GO"
+        if any(r.decision == "NO-GO" for r in detector_results)
+        else (
+            "INCONCLUSIVE"
+            if any(r.decision == "INCONCLUSIVE" for r in detector_results)
+            else "GO"
+        )
+    )
+
+    overall_pass = overall_decision == "GO"
+
     report = {
         "run_id": run_id,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "suite": suite_stats,
-        "overall_pass": all(r.passed for r in detector_results),
+        "overall_decision": overall_decision,
+        "overall_pass": overall_pass,
         "providers": [],
         **extra_meta,
     }
@@ -90,15 +103,23 @@ def generate_json_report(
                     "pass_rate": dr.current_snapshot.pass_rate,
                     "mean_accuracy": dr.current_snapshot.mean_accuracy,
                     "mean_latency_ms": dr.current_snapshot.mean_latency_ms,
+                    "p50_latency_ms": dr.current_snapshot.p50_latency_ms,
+                    "p95_latency_ms": dr.current_snapshot.p95_latency_ms,
+                    "latency_stddev_ms": dr.current_snapshot.latency_stddev_ms,
                     "total_cost_usd": dr.current_snapshot.total_cost_usd,
                     "n_tests": dr.current_snapshot.n_tests,
                     "task_scores": dr.current_snapshot.task_scores,
+                    "task_passes": dr.current_snapshot.task_passes,
+                    "task_cost_usd": dr.current_snapshot.task_cost_usd,
+                    "task_latency_ms": dr.current_snapshot.task_latency_ms,
+                    "testcase_results": dr.current_snapshot.testcase_results,
                     "metadata": dr.current_snapshot.metadata,
                 },
                 "baseline": {
                     "pass_rate": dr.baseline_snapshot.pass_rate if dr.baseline_snapshot else None,
                     "mean_accuracy": dr.baseline_snapshot.mean_accuracy if dr.baseline_snapshot else None,
                     "mean_latency_ms": dr.baseline_snapshot.mean_latency_ms if dr.baseline_snapshot else None,
+                    "p95_latency_ms": dr.baseline_snapshot.p95_latency_ms if dr.baseline_snapshot else None,
                 }
                 if dr.baseline_snapshot
                 else None,
@@ -120,7 +141,17 @@ def generate_markdown_report(
     detector_results: list[DetectorResult],
     suite_stats: dict,
 ) -> Path:
-    overall_pass = all(r.passed for r in detector_results)
+    overall_decision = (
+        "NO-GO"
+        if any(r.decision == "NO-GO" for r in detector_results)
+        else (
+            "INCONCLUSIVE"
+            if any(r.decision == "INCONCLUSIVE" for r in detector_results)
+            else "GO"
+        )
+    )
+
+    overall_pass = overall_decision == "GO"
 
     status_badge = (
         "✅ PASSED"
@@ -128,7 +159,7 @@ def generate_markdown_report(
         else "❌ FAILED — REGRESSIONS DETECTED"
     )
 
-    decision = "GO" if overall_pass else "NO-GO"
+    decision = overall_decision
 
     lines = [
         f"# The Guard — Eval Report",

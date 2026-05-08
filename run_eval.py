@@ -291,8 +291,27 @@ def main():
     console.print(f"\n  [bold]Budget used:[/bold] ${state.total_cost_usd:.6f} / ${budget.max_cost_usd:.2f}  |  "
                   f"Tokens: {state.total_tokens:,} / {budget.max_tokens:,}")
 
+    evaluation_meta = {
+        "evaluation_config": {
+            "providers": [p.name for p in providers],
+            "max_cost_usd": args.max_cost,
+            "statistical_significance_threshold": 0.05,
+            "confidence_level": 0.95,
+            "run_mode": (
+                "baseline_update"
+                if args.update_baseline
+                else "standard"
+            ),
+        }
+    }
+
     console.rule("[bold]Reports[/bold]")
-    json_path = generate_json_report(run_id, detector_results, suite_stats)
+    json_path = generate_json_report(
+        run_id,
+        detector_results,
+        suite_stats,
+        extra_meta=evaluation_meta,
+    )
     md_path   = generate_markdown_report(run_id, detector_results, suite_stats)
     console.print(f"  JSON: {json_path}")
     console.print(f"  MD:   {md_path}")

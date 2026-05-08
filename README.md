@@ -159,7 +159,6 @@ Set these in your shell or `.env`:
 OPENAI_API_KEY=...
 GEMINI_API_KEY=...
 GROQ_API_KEY=...
-ANTHROPIC_API_KEY=...
 ```
 
 Notes:
@@ -167,7 +166,6 @@ Notes:
 - `OPENAI_API_KEY` is required for OpenAI eval runs
 - `GEMINI_API_KEY` is required for Gemini eval runs
 - `GROQ_API_KEY` is required for Groq eval runs
-- `ANTHROPIC_API_KEY` is only needed for the LLM judge path
 
 ### Eval Commands
 
@@ -295,7 +293,6 @@ Repository settings note:
 
 ## What Broke First
 
-Only the major bugs are listed here.
 
 1. `score_format_compliance` was reading the wrong length key.
    `tests.json` used `max_chars`, while the scorer expected `max_length`. That made deal-copy length checks effectively wrong across the suite. I fixed it by supporting both shapes and the title/body split path.
