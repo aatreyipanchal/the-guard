@@ -14,6 +14,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 SEMANTIC_THRESHOLD = 0.75
 FORMAT_PASS_THRESH = 0.75
 
+TASK_THRESHOLDS = {
+    "deal_copy": 0.75,
+    "insurance_intent": 1.0,
+    "credit_narrative": 0.80,
+    "summarization": 0.75,
+    "classification": 1.0,
+    "extraction": 0.95,
+}
+
 _CREDIT_META_KEYS = frozenset({
     "expected_claims",
     "adversarial",
@@ -120,7 +129,7 @@ def score_semantic(
 
     sim = max(0.0, min(1.0, sim))
 
-    passed = sim >= SEMANTIC_THRESHOLD
+    passed = sim >= TASK_THRESHOLDS["summarization"]
 
     return ScorerResult(
         test_id=test_id,
@@ -221,7 +230,7 @@ def score_json_match(
         provider=provider,
         scoring_method="json_match",
         score=s,
-        passed=(s == 1.0),
+        passed=(s >= TASK_THRESHOLDS["extraction"]),
         expected=expected,
         actual=actual,
         confidence=0.95,
@@ -384,7 +393,7 @@ def score_format_compliance(
 
     s = max(0.0, min(1.0, s))
 
-    passed = s >= FORMAT_PASS_THRESH
+    passed = s >= TASK_THRESHOLDS["deal_copy"]
 
     return ScorerResult(
         test_id=test_id,
@@ -434,9 +443,8 @@ def score_intent_match(
     norm_actual = _normalize_label(raw)
     norm_expected = _normalize_label(str(expected))
 
-    passed = norm_actual == norm_expected
-
-    s = 1.0 if passed else 0.0
+    s = 1.0 if norm_actual == norm_expected else 0.0
+    passed = s >= TASK_THRESHOLDS["insurance_intent"]
 
     return ScorerResult(
         test_id=test_id,
@@ -536,7 +544,7 @@ def score_factual_grounding(
         4,
     )
 
-    passed = s >= 0.80
+    passed = s >= TASK_THRESHOLDS["credit_narrative"]
 
     return ScorerResult(
         test_id=test_id,
@@ -571,22 +579,22 @@ Return ONLY valid JSON.
 
 def _call_judge_api(actual: str, reference: str):
 
-    api_key = os.getenv("ANTHROPIC_API_KEY")
+    api_key = os.getenv("OPENAI_API_KEY")
 
     if not api_key:
         return None
 
     try:
-        from anthropic import Anthropic
+        from openai import OpenAI
 
-        client = Anthropic(api_key=api_key)
+        client = OpenAI(api_key=api_key)
 
-        resp = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=128,
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            max_tokens=256,
             temperature=0,
-            system=_LLM_JUDGE_PROMPT,
             messages=[
+                {"role": "system", "content": _LLM_JUDGE_PROMPT},
                 {
                     "role": "user",
                     "content":
@@ -594,12 +602,10 @@ def _call_judge_api(actual: str, reference: str):
                         f"Generated: {actual}",
                 }
             ],
+            response_format={"type": "json_object"}
         )
 
-        raw = resp.content[0].text.strip()
-
-        raw = re.sub(r"^```(?:json)?\s*", "", raw)
-        raw = re.sub(r"\s*```$", "", raw)
+        raw = resp.choices[0].message.content.strip()
 
         return json.loads(raw)
 
@@ -653,7 +659,7 @@ def score_llm_judge(
                 provider=provider,
                 scoring_method="llm_judge",
                 score=sem.score,
-                passed=sem.score >= 0.70,
+                passed=sem.score >= TASK_THRESHOLDS["deal_copy"],
                 expected=expected,
                 actual=actual,
                 confidence=0.75,
@@ -682,7 +688,7 @@ def score_llm_judge(
         provider=provider,
         scoring_method="llm_judge",
         score=final,
-        passed=final >= 0.70,
+        passed=final >= TASK_THRESHOLDS["deal_copy"],
         expected=expected,
         actual=actual,
         confidence=0.85,

@@ -297,17 +297,115 @@ DEAL_COPY_CASES:        list[TestCase] = [_make_deal_case(c)      for c in _data
 INSURANCE_INTENT_CASES: list[TestCase] = [_make_insurance_case(c) for c in _data["insurance_intent_classification"]]
 CREDIT_NARRATIVE_CASES: list[TestCase] = [_make_credit_case(c)    for c in _data["credit_narrative_faithfulness"]]
 
-ALL_TEST_CASES: list[TestCase] = DEAL_COPY_CASES + INSURANCE_INTENT_CASES + CREDIT_NARRATIVE_CASES
+# ─────────────────────────────────────────────
+# 4. Summarization cases (10 cases)
+# ─────────────────────────────────────────────
+SUMMARIZATION_CASES = [
+    TestCase(
+        id=f"sum_{i:03d}",
+        task_type="summarization",
+        prompt=p,
+        expected=e,
+        scoring_method="semantic",
+        metadata={"difficulty": "medium", "language": "english"},
+    )
+    for i, (p, e) in enumerate([
+        ("Summarize this GrabOn deal: 'Save 50% on all Nike shoes at Myntra using code NIKE50. Valid until Friday.'", "Get 50% off Nike shoes at Myntra with code NIKE50 by Friday."),
+        ("Summarize this user feedback: 'I tried to use the coupon for Amazon but it said expired. The customer support was helpful though and gave me a new one.'", "User faced an expired Amazon coupon; support provided a working replacement."),
+        ("Summarize: 'GrabOn is India's leading coupon company, saving millions for shoppers across 5000+ brands since 2013.'", "Founded in 2013, GrabOn is a top Indian coupon site serving 5000+ brands."),
+        ("Summarize this policy: 'Refunds are processed within 7-10 business days after the item is received at our warehouse.'", "Refunds take 7-10 business days after the item reaches the warehouse."),
+        ("Summarize: 'The GrabOn Cricket Fantasy League allows users to win points and redeem them for vouchers from top brands like Swiggy and Zomato.'", "GrabOn's Cricket Fantasy League offers Swiggy/Zomato vouchers as rewards."),
+        ("Summarize: 'Our accidental damage insurance covers cracked screens, liquid spills, and hardware failures for all smartphones under 2 years old.'", "Accidental damage insurance covers screens, spills, and hardware for phones under 2 years."),
+        ("Summarize: 'To qualify for GrabCredit, you must have a minimum monthly GMV of 1,00,000 INR and a clean repayment history for 6 months.'", "GrabCredit requires 1L monthly GMV and 6 months of clean repayments."),
+        ("Summarize: 'GrabOn's gift cards can be used across multiple stores, including retail, dining, and online entertainment platforms.'", "GrabOn gift cards are valid for retail, dining, and online entertainment."),
+        ("Summarize: 'The new Llama 3 model on Groq is significantly faster than previous versions, enabling real-time classification at scale.'", "Groq's Llama 3 model enables high-speed, real-time classification."),
+        ("Summarize: 'Always double-check the expiry date and terms of a coupon before attempting to checkout to avoid frustration.'", "Verify coupon terms and expiry before checkout to prevent issues."),
+    ])
+]
+
+# ─────────────────────────────────────────────
+# 5. Classification cases (10 cases)
+# ─────────────────────────────────────────────
+CLASSIFICATION_CASES = [
+    TestCase(
+        id=f"cls_{i:03d}",
+        task_type="classification",
+        prompt=f"Categorize this user message into one of: [Complaint, Inquiry, Praise]. Respond with ONLY the label.\nMessage: '{msg}'",
+        expected=label,
+        scoring_method="exact",
+        metadata={"difficulty": "easy", "language": "english"},
+    )
+    for i, (msg, label) in enumerate([
+        ("My coupon isn't working on Swiggy!", "Complaint"),
+        ("How do I redeem my points for a gift card?", "Inquiry"),
+        ("I love using GrabOn, it saved me 2000 rupees today!", "Praise"),
+        ("Is the Adidas sale still live?", "Inquiry"),
+        ("The app crashed while I was looking for deals.", "Complaint"),
+        ("GrabOn has the best interface among all coupon sites.", "Praise"),
+        ("When will the next referral bonus be credited?", "Inquiry"),
+        ("I waited for 2 days but still no response from support.", "Complaint"),
+        ("Thanks for the great deals on flight tickets!", "Praise"),
+        ("Can I use two coupons on the same order?", "Inquiry"),
+    ])
+]
+
+# ─────────────────────────────────────────────
+# 6. Extraction cases (10 cases)
+# ─────────────────────────────────────────────
+EXTRACTION_CASES = [
+    TestCase(
+        id=f"ext_{i:03d}",
+        task_type="extraction",
+        prompt=f"Extract the 'store', 'discount', and 'coupon_code' from this text. Return ONLY JSON.\nText: '{text}'",
+        expected=data,
+        scoring_method="json_match",
+        metadata={"difficulty": "medium", "language": "english"},
+    )
+    for i, (text, data) in enumerate([
+        ("Use code GRAB20 for 20% off at Zomato.", {"store": "Zomato", "discount": "20%", "coupon_code": "GRAB20"}),
+        ("Get 500 OFF on Amazon using AMZ500.", {"store": "Amazon", "discount": "500 OFF", "coupon_code": "AMZ500"}),
+        ("First order on Blinkit? Use NEW100 for 100 cashback.", {"store": "Blinkit", "discount": "100 cashback", "coupon_code": "NEW100"}),
+        ("Flat 10% discount at Nykaa with code NYK10.", {"store": "Nykaa", "discount": "10%", "coupon_code": "NYK10"}),
+        ("Book flights on MakeMyTrip and get 1500 off via code MMTFLIGHT.", {"store": "MakeMyTrip", "discount": "1500 off", "coupon_code": "MMTFLIGHT"}),
+        ("Dominos Pizza: Buy 1 Get 1 Free using BOGO.", {"store": "Dominos", "discount": "Buy 1 Get 1 Free", "coupon_code": "BOGO"}),
+        ("Save 30% on Ajio with AJIO30 code.", {"store": "Ajio", "discount": "30%", "coupon_code": "AJIO30"}),
+        ("Uber Intercity: Get 250 off on your first ride using UBER250.", {"store": "Uber", "discount": "250 off", "coupon_code": "UBER250"}),
+        ("Netmeds: 25% OFF on medicines using HEALTH25.", {"store": "Netmeds", "discount": "25% OFF", "coupon_code": "HEALTH25"}),
+        ("Hostinger: 80% discount on hosting with code SAVE80.", {"store": "Hostinger", "discount": "80%", "coupon_code": "SAVE80"}),
+    ])
+]
+
+_DEAL_IDS = {c.id for c in DEAL_COPY_CASES}
+_INS_IDS = {c.id for c in INSURANCE_INTENT_CASES}
+_CR_IDS = {c.id for c in CREDIT_NARRATIVE_CASES}
+_SUM_IDS = {c.id for c in SUMMARIZATION_CASES}
+_CLS_IDS = {c.id for c in CLASSIFICATION_CASES}
+_EXT_IDS = {c.id for c in EXTRACTION_CASES}
+
+ALL_TEST_CASES: list[TestCase] = (
+    DEAL_COPY_CASES +
+    INSURANCE_INTENT_CASES +
+    CREDIT_NARRATIVE_CASES +
+    SUMMARIZATION_CASES +
+    CLASSIFICATION_CASES +
+    EXTRACTION_CASES
+)
 
 SUITE_STATS = {
     "total":            len(ALL_TEST_CASES),
     "deal_copy":        len(DEAL_COPY_CASES),
     "insurance_intent": len(INSURANCE_INTENT_CASES),
     "credit_narrative": len(CREDIT_NARRATIVE_CASES),
+    "summarization":    len(SUMMARIZATION_CASES),
+    "classification":   len(CLASSIFICATION_CASES),
+    "extraction":       len(EXTRACTION_CASES),
     "adversarial": {
         "deal_copy":        sum(1 for c in DEAL_COPY_CASES        if c.metadata.get("adversarial")),
         "insurance_intent": sum(1 for c in INSURANCE_INTENT_CASES if c.metadata.get("adversarial")),
         "credit_narrative": sum(1 for c in CREDIT_NARRATIVE_CASES if c.metadata.get("adversarial")),
+        "summarization":    0,
+        "classification":   0,
+        "extraction":       0,
     },
     "by_language": {
         lang: sum(1 for c in ALL_TEST_CASES if c.metadata.get("language") == lang)
@@ -326,8 +424,8 @@ if __name__ == "__main__":
     print("GrabOn Eval Suite — Validation Report")
     print("=" * 60)
     print(f"\nTotal: {SUITE_STATS['total']} test cases")
-    for k in ("deal_copy", "insurance_intent", "credit_narrative"):
-        adv = SUITE_STATS["adversarial"][k]
+    for k in ("deal_copy", "insurance_intent", "credit_narrative", "summarization", "classification", "extraction"):
+        adv = SUITE_STATS["adversarial"].get(k, 0)
         print(f"  {k:25}: {SUITE_STATS[k]:3d} total  ({adv} adversarial)")
     print(f"\nLanguage breakdown: {SUITE_STATS['by_language']}")
     print(f"Difficulty: {SUITE_STATS['by_difficulty']}")

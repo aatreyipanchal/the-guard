@@ -313,8 +313,13 @@ def main():
         extra_meta=evaluation_meta,
     )
     md_path   = generate_markdown_report(run_id, detector_results, suite_stats)
-    console.print(f"  JSON: {json_path}")
-    console.print(f"  MD:   {md_path}")
+
+    # Use relative paths for better terminal clickability
+    rel_json = Path(json_path).relative_to(Path.cwd()) if Path(json_path).is_absolute() else json_path
+    rel_md = Path(md_path).relative_to(Path.cwd()) if Path(md_path).is_absolute() else md_path
+
+    console.print(f"  JSON: {rel_json}")
+    console.print(f"  MD:   {rel_md}")
     console.print(f"  Log:  logs/eval.log")
 
     decisions = [dr.decision for dr in detector_results]

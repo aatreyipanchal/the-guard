@@ -181,6 +181,39 @@ def get_git_branch() -> str:
     return _run_git_command(["rev-parse", "--abbrev-ref", "HEAD"]) or _head_ref()[1]
 
 
+def get_git_metadata() -> dict:
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            text=True,
+        ).strip()
+
+        branch = subprocess.check_output(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            text=True,
+        ).strip()
+
+        dirty = bool(
+            subprocess.check_output(
+                ["git", "status", "--porcelain"],
+                text=True,
+            ).strip()
+        )
+
+        return {
+            "git_commit": commit,
+            "git_branch": branch,
+            "git_dirty": dirty,
+        }
+
+    except Exception:
+        return {
+            "git_commit": "unknown",
+            "git_branch": "unknown",
+            "git_dirty": False,
+        }
+
+
 def get_prompt_diff() -> str:
     diff = _run_git_command(["diff", "HEAD~1", "--", *_PROMPT_SOURCE_PATHS])
     return diff or ""
