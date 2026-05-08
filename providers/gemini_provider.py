@@ -1,5 +1,5 @@
 """
-Google Gemini provider — gemini-1.5-flash for cost efficiency.
+Google Gemini provider — gemini-2.5-flash-lite for cost efficiency.
 Pricing (2025): $0.075 / 1M input, $0.30 / 1M output.
 
 Deliberate model choice: Flash over Pro. Used for: shadow testing + cross-validation.
@@ -10,14 +10,43 @@ import time
 import google.generativeai as genai
 from .base import BaseProvider, ProviderResponse
 
-INPUT_COST_PER_TOKEN  = 0.075 / 1_000_000
-OUTPUT_COST_PER_TOKEN = 0.30  / 1_000_000
+INPUT_COST_PER_TOKEN  = 0.10 / 1_000_000
+OUTPUT_COST_PER_TOKEN = 0.40  / 1_000_000
 MAX_RETRIES = 3
+
+
+def _serialize_gemini_candidate(candidate):
+    to_dict = getattr(candidate, "to_dict", None)
+    if callable(to_dict):
+        try:
+            return to_dict()
+        except Exception:
+            pass
+
+    model_dump = getattr(candidate, "model_dump", None)
+    if callable(model_dump):
+        try:
+            return model_dump()
+        except Exception:
+            pass
+
+    try:
+        from google.protobuf.json_format import MessageToDict
+        return MessageToDict(candidate._pb)
+    except Exception:
+        pass
+
+    text = getattr(candidate, "text", None)
+    finish_reason = getattr(candidate, "finish_reason", None)
+    return {
+        "text": text,
+        "finish_reason": str(finish_reason) if finish_reason is not None else None,
+    }
 
 
 class GeminiProvider(BaseProvider):
     name  = "gemini"
-    model = "gemini-1.5-flash"
+    model = "gemini-2.5-flash-lite"
 
     def __init__(self):
         api_key = os.getenv("GEMINI_API_KEY")
@@ -45,7 +74,10 @@ class GeminiProvider(BaseProvider):
                     output=content.strip(), latency_ms=latency_ms,
                     prompt_tokens=pt, completion_tokens=ct, total_tokens=pt + ct,
                     cost_usd=cost,
-                    raw={"candidates": [c.to_dict() for c in raw_response.candidates]},
+                    raw={
+                        "text": content.strip(),
+                        "candidates": [_serialize_gemini_candidate(c) for c in raw_response.candidates],
+                    },
                 )
             except Exception as e:
                 typed = classify_provider_exception(e, provider=self.name, test_id=test_id)

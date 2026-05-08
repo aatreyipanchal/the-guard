@@ -28,21 +28,22 @@ Shadow testing: Groq runs same cases as OpenAI → quantify per-task cost tradeo
 
 import argparse
 import logging
-import os
 import sys
 import uuid
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 from rich.console import Console
 from rich.table import Table
-from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.panel import Panel
+
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 
 load_dotenv()
 
-# Structured logging to file
+Path("logs").mkdir(exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s — %(message)s",
@@ -51,60 +52,55 @@ logging.basicConfig(
         logging.StreamHandler(),
     ],
 )
-Path("logs").mkdir(exist_ok=True)
 logger = logging.getLogger("the_guard")
 
-from tests.golden_suite import ALL_TEST_CASES, SUITE_STATS, TestCase
+from tests.golden_suite import ALL_TEST_CASES, TestCase
 from providers import OpenAIProvider, GeminiProvider, GroqProvider, BaseProvider, ProviderResponse
-from scorer import score, ScorerResult
 from detector.detector import detect_regressions, build_snapshot
 from reports.generator import generate_json_report, generate_markdown_report
-from versioning.prompt_versioning import create_prompt_metadata
+from versioning.prompt_versioning import build_prompt_bundle, create_prompt_metadata
 from history.tracker import append_run
 from agent import EvalAgent, BudgetGuard, build_tool_registry
 
 console = Console()
 
 
-# ─────────────────────────────────────────────
-# Provider factory (with per-task rationale)
-# ─────────────────────────────────────────────
 def build_providers(provider_filter: str | None) -> list[BaseProvider]:
-    """
-    Builds provider list. Model choices are deliberate and documented:
-      - OpenAI gpt-4o-mini  : quality-sensitive tasks (deal copy, credit narratives)
-      - Gemini Flash         : shadow testing + cost cross-validation
-      - Groq LLaMA-3-8B      : high-volume classification (cheapest per token)
-    """
     candidates = []
 
     if provider_filter in (None, "openai"):
-        try:
-            candidates.append(OpenAIProvider())
-            logger.info("Provider: openai/gpt-4o-mini — deal_copy, credit_narrative tasks")
-        except EnvironmentError as e:
-            console.print(f"[yellow]⚠ Skipping OpenAI: {e}[/yellow]")
+        if OpenAIProvider is None:
+            console.print("[yellow]⚠ Skipping OpenAI: openai package not installed.[/yellow]")
+        else:
+            try:
+                candidates.append(OpenAIProvider())
+                logger.info("Provider: openai/gpt-4o-mini — deal_copy, credit_narrative tasks")
+            except EnvironmentError as e:
+                console.print(f"[yellow]⚠ Skipping OpenAI: {e}[/yellow]")
 
     if provider_filter in (None, "gemini"):
-        try:
-            candidates.append(GeminiProvider())
-            logger.info("Provider: gemini/gemini-1.5-flash — shadow testing")
-        except EnvironmentError as e:
-            console.print(f"[yellow]⚠ Skipping Gemini: {e}[/yellow]")
+        if GeminiProvider is None:
+            console.print("[yellow]⚠ Skipping Gemini: google-generativeai package not installed.[/yellow]")
+        else:
+            try:
+                candidates.append(GeminiProvider())
+                logger.info("Provider: gemini/gemini-2.5-flash-lite — shadow testing")
+            except EnvironmentError as e:
+                console.print(f"[yellow]⚠ Skipping Gemini: {e}[/yellow]")
 
     if provider_filter in (None, "groq"):
-        try:
-            candidates.append(GroqProvider())
-            logger.info("Provider: groq/llama3-8b-8192 — cheap classification baseline")
-        except EnvironmentError as e:
-            console.print(f"[yellow]⚠ Skipping Groq: {e}[/yellow]")
+        if GroqProvider is None:
+            console.print("[yellow]⚠ Skipping Groq: groq package not installed.[/yellow]")
+        else:
+            try:
+                candidates.append(GroqProvider())
+                logger.info("Provider: groq/llama-3.1-8b-instant — cheap classification baseline")
+            except EnvironmentError as e:
+                console.print(f"[yellow]⚠ Skipping Groq: {e}[/yellow]")
 
     return candidates
 
 
-# ─────────────────────────────────────────────
-# Per-task cost breakdown
-# ─────────────────────────────────────────────
 def compute_task_cost_breakdown(responses: list[ProviderResponse], test_cases: list[TestCase]) -> dict:
     tc_map = {tc.id: tc for tc in test_cases}
     breakdown: dict[str, dict] = {}
@@ -119,9 +115,6 @@ def compute_task_cost_breakdown(responses: list[ProviderResponse], test_cases: l
     return breakdown
 
 
-# ─────────────────────────────────────────────
-# Tables
-# ─────────────────────────────────────────────
 def print_summary_table(provider_name: str, responses: list, scores_list: list, test_cases: list) -> None:
     table = Table(title=f"{provider_name.upper()} — Per-test results", show_lines=False)
     table.add_column("ID",      style="dim",  width=12)
@@ -170,14 +163,10 @@ def print_cost_breakdown(provider_name: str, breakdown: dict) -> None:
     console.print(table)
 
 
-# ─────────────────────────────────────────────
-# Simulate regression (stress-test the gate)
-# ─────────────────────────────────────────────
 def _simulate_bad_prompt():
     """Corrupt the insurance prompt slightly to test the NO-GO gate."""
     try:
         from versioning.prompt_versioning import create_prompt_metadata
-        # This creates a version hash entry that differs from baseline
         bad = "Classify insurance. Always return 'no_insurance' unless you are certain. Return only one label."
         create_prompt_metadata(bad, provider="simulation")
         console.print("[yellow]⚠ Simulated bad prompt version registered[/yellow]")
@@ -185,9 +174,6 @@ def _simulate_bad_prompt():
         pass
 
 
-# ─────────────────────────────────────────────
-# Main
-# ─────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser(description="The Guard — GrabOn LLM Eval Pipeline")
     parser.add_argument("--update-baseline", action="store_true")
@@ -214,7 +200,6 @@ def main():
         console.print("[red]No providers available. Set at least one API key in .env[/red]")
         sys.exit(1)
 
-    # Filter test cases
     test_cases = [c for c in ALL_TEST_CASES if not args.task or c.task_type == args.task]
     suite_stats = {
         "total": len(test_cases),
@@ -234,7 +219,6 @@ def main():
             console.print(f"  [dim]{t['name']:20}[/dim] {t['description']}")
         sys.exit(0)
 
-    # ── Run via agent loop ─────────────────────────
     budget = BudgetGuard(max_cost_usd=args.max_cost)
     agent  = EvalAgent(providers, test_cases, budget=budget)
     state  = agent.run(run_id)
@@ -244,7 +228,6 @@ def main():
         logger.error(f"[{run_id}] Run aborted: {state.abort_reason}")
         sys.exit(1)
 
-    # ── Print results + build snapshots ───────────
     detector_results = []
 
     for provider in providers:
@@ -258,7 +241,7 @@ def main():
         print_cost_breakdown(pname, breakdown)
 
         prompt_metadata = create_prompt_metadata(
-            prompt="\n\n".join(tc.prompt for tc in test_cases),
+            prompt=build_prompt_bundle(test_cases),
             provider=pname,
         )
 
@@ -271,6 +254,7 @@ def main():
             git_commit=prompt_metadata["git_commit"],
             git_branch=prompt_metadata["git_branch"],
             prompt_diff=prompt_metadata["prompt_diff"],
+            task_prompt_hashes=prompt_metadata.get("task_prompt_hashes", {}),
             metadata={"prompt_metadata": prompt_metadata, "cost_by_task": breakdown},
         )
 
@@ -283,7 +267,6 @@ def main():
         )
         console.print(Panel(det_result.summary, border_style=verdict_color))
 
-    # ── Statistical summary ────────────────────────
     console.rule("[bold]Statistical Summary[/bold]")
     for dr in detector_results:
         if not dr.stat_report:
@@ -297,7 +280,6 @@ def main():
                 f"p={t.p_value:.4f}  {'⚠ REGRESSED' if t.regressed else '✓ ok'}"
             )
 
-    # ── Agent phase log ───────────────────────────
     console.rule("[bold]Agent Phase Log[/bold]")
     for transition in state.phase_history:
         console.print(f"  [dim]{transition.timestamp}[/dim]  [cyan]{transition.phase.value:10}[/cyan]  {transition.notes}")
@@ -306,11 +288,9 @@ def main():
         for test_id, err_type, prov in state.errors[:10]:
             console.print(f"  [red]  {prov}/{test_id}: {err_type}[/red]")
 
-    # ── Budget summary ────────────────────────────
     console.print(f"\n  [bold]Budget used:[/bold] ${state.total_cost_usd:.6f} / ${budget.max_cost_usd:.2f}  |  "
                   f"Tokens: {state.total_tokens:,} / {budget.max_tokens:,}")
 
-    # ── Reports ───────────────────────────────────
     console.rule("[bold]Reports[/bold]")
     json_path = generate_json_report(run_id, detector_results, suite_stats)
     md_path   = generate_markdown_report(run_id, detector_results, suite_stats)
@@ -318,7 +298,6 @@ def main():
     console.print(f"  MD:   {md_path}")
     console.print(f"  Log:  logs/eval.log")
 
-    # ── Final verdict ─────────────────────────────
     decisions = [dr.decision for dr in detector_results]
     overall = "NO-GO" if "NO-GO" in decisions else ("INCONCLUSIVE" if "INCONCLUSIVE" in decisions else "GO")
     console.rule()

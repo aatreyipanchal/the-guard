@@ -173,3 +173,10 @@ config.json
 # Cache directories
 .cache/
 __pycache__/
+
+# Eval artifacts
+baselines/*.json
+reports/*.json
+reports/*.md
+
+tmp_*/

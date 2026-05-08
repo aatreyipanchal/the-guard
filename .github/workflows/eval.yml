@@ -1,4 +1,4 @@
-name: The Guard — GrabOn LLM Eval Pipeline
+name: The Guard - GrabOn LLM Eval Pipeline
 
 on:
   push:
@@ -14,6 +14,11 @@ on:
       - "tests.json"
       - "agent.py"
       - "run_eval.py"
+      - "detector/**"
+      - "versioning/**"
+      - "dashboard/**"
+      - "history/**"
+      - ".github/workflows/eval.yml"
   workflow_dispatch:
     inputs:
       update_baseline:
@@ -60,7 +65,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GROQ_API_KEY:   ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python run_eval.py --dry-run
 
@@ -69,22 +74,36 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GROQ_API_KEY:   ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        shell: bash
         run: |
+          set +e
           UPDATE_FLAG=""
           PROVIDER_FLAG=""
           if [ "${{ github.event.inputs.update_baseline }}" = "yes" ]; then
             UPDATE_FLAG="--update-baseline"
           fi
-          if [ "${{ github.event.inputs.provider }}" != "" ] && \
-             [ "${{ github.event.inputs.provider }}" != "all" ]; then
+          if [ "${{ github.event.inputs.provider }}" != "" ] && [ "${{ github.event.inputs.provider }}" != "all" ]; then
             PROVIDER_FLAG="--provider ${{ github.event.inputs.provider }}"
           fi
+
           python run_eval.py $UPDATE_FLAG $PROVIDER_FLAG
-        continue-on-error: true
+          EXIT_CODE=$?
+
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+
+          case "$EXIT_CODE" in
+            0) echo "decision=GO" >> "$GITHUB_OUTPUT" ;;
+            1) echo "decision=NO-GO" >> "$GITHUB_OUTPUT" ;;
+            2) echo "decision=INCONCLUSIVE" >> "$GITHUB_OUTPUT" ;;
+            *) echo "decision=ERROR" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+          exit 0
 
       - name: Upload eval report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: eval-report-${{ github.run_id }}
@@ -94,7 +113,7 @@ jobs:
           retention-days: 30
 
       - name: Post report as PR comment
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
@@ -102,7 +121,10 @@ jobs:
             const glob = require('@actions/glob');
             const globber = await glob.create('reports/*.md');
             const files = await globber.glob();
-            if (files.length === 0) { console.log('No report found'); return; }
+            if (files.length === 0) {
+              console.log('No report found');
+              return;
+            }
             const body = fs.readFileSync(files[files.length - 1], 'utf8');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -118,17 +140,29 @@ jobs:
           path: baselines/
           key: baselines-${{ github.ref_name }}-${{ github.sha }}
 
-      # ── GO / NO-GO gate ─────────────────────────────────────────────
-      # Exit code 0 = GO, 1 = NO-GO (blocks merge), 2 = INCONCLUSIVE
-      - name: Check eval result — block on NO-GO
+      - name: Check eval result
+        shell: bash
         run: |
-          EXIT=${{ steps.eval.outputs.exit_code }}
-          if [ "${{ steps.eval.outcome }}" = "failure" ]; then
-            if grep -q "NO-GO" reports/*.md 2>/dev/null; then
-              echo "❌ NO-GO — regression detected. PR blocked."
-              exit 1
-            fi
-            echo "⚠ Eval step failed for non-regression reason."
+          EXIT_CODE="${{ steps.eval.outputs.exit_code }}"
+          DECISION="${{ steps.eval.outputs.decision }}"
+
+          echo "Eval exit code: $EXIT_CODE"
+          echo "Eval decision: $DECISION"
+
+          if [ "$EXIT_CODE" = "0" ]; then
+            echo "GO - no regressions detected."
+            exit 0
+          fi
+
+          if [ "$EXIT_CODE" = "1" ]; then
+            echo "NO-GO - regression detected. PR blocked."
             exit 1
           fi
-          echo "✅ GO — no regressions detected."
+
+          if [ "$EXIT_CODE" = "2" ]; then
+            echo "INCONCLUSIVE - baseline missing or insufficient data. Manual review required."
+            exit 1
+          fi
+
+          echo "Eval failed for an unexpected reason."
+          exit 1

@@ -13,11 +13,17 @@ from .base import BaseProvider, ProviderResponse
 INPUT_COST_PER_TOKEN  = 0.15  / 1_000_000
 OUTPUT_COST_PER_TOKEN = 0.60  / 1_000_000
 MAX_RETRIES = 3
+_MAX_TOKENS_BY_PREFIX = {
+    "deal_": 120,
+    "insurance_": 24,
+    "credit_": 220,
+}
 
 
 class OpenAIProvider(BaseProvider):
     name  = "openai"
     model = "gpt-4o-mini"
+    request_gap_seconds = 0.0
 
     def __init__(self):
         api_key = os.getenv("OPENAI_API_KEY")
@@ -25,17 +31,24 @@ class OpenAIProvider(BaseProvider):
             raise EnvironmentError("OPENAI_API_KEY not set in environment.")
         self.client = OpenAI(api_key=api_key)
 
+    def _max_tokens_for_test(self, test_id: str) -> int:
+        for prefix, max_tokens in _MAX_TOKENS_BY_PREFIX.items():
+            if test_id.startswith(prefix):
+                return max_tokens
+        return 128
+
     def call(self, prompt: str, test_id: str) -> ProviderResponse:
         from errors import classify_provider_exception, APIRateLimitError, APITimeoutError, APIServerError
         last_err = None
         for attempt in range(MAX_RETRIES):
             try:
+                max_tokens = self._max_tokens_for_test(test_id)
                 raw_response, latency_ms = self._timed_call(
                     self.client.chat.completions.create,
                     model=self.model,
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0,
-                    max_tokens=512,
+                    max_tokens=max_tokens,
                 )
                 usage   = raw_response.usage
                 content = raw_response.choices[0].message.content or ""
@@ -47,7 +60,11 @@ class OpenAIProvider(BaseProvider):
                     prompt_tokens=usage.prompt_tokens,
                     completion_tokens=usage.completion_tokens,
                     total_tokens=usage.total_tokens, cost_usd=cost,
-                    raw=raw_response.model_dump(),
+                    raw={
+                        "id": raw_response.id,
+                        "max_tokens": max_tokens,
+                        "finish_reason": raw_response.choices[0].finish_reason,
+                    },
                 )
             except Exception as e:
                 typed = classify_provider_exception(e, provider=self.name, test_id=test_id)

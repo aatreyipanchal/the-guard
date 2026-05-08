@@ -9,7 +9,6 @@ Responsibilities:
 """
 
 import json
-import os
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,6 +16,7 @@ from typing import Optional
 
 import numpy as np
 from stats.engine import compare_to_baseline, StatisticalReport
+from versioning.prompt_versioning import diff_prompt_bundles, summarize_prompt_diffs
 
 
 BASELINES_DIR = Path(__file__).parent.parent / "baselines"
@@ -44,11 +44,14 @@ class RunSnapshot:
     task_cost_usd: dict[str, float] = field(default_factory=dict)
     task_latency_ms: dict[str, float] = field(default_factory=dict)
     task_counts: dict[str, int] = field(default_factory=dict)
+    task_language_scores: dict[str, dict[str, list[float]]] = field(default_factory=dict)
     prompt_hash: str = ""
     prompt_version: str = ""
     git_commit: str = ""
     git_branch: str = ""
     prompt_diff: str = ""
+    prompt_diffs_by_task: dict[str, str] = field(default_factory=dict)
+    task_prompt_hashes: dict[str, str] = field(default_factory=dict)
     metadata: dict = field(default_factory=dict)
 
 
@@ -84,11 +87,14 @@ def load_baseline(provider: str) -> Optional[RunSnapshot]:
     data.setdefault("task_cost_usd", {})
     data.setdefault("task_latency_ms", {})
     data.setdefault("task_counts", {})
+    data.setdefault("task_language_scores", {})
     data.setdefault("prompt_hash", "")
     data.setdefault("prompt_version", "")
     data.setdefault("git_commit", "")
     data.setdefault("git_branch", "")
     data.setdefault("prompt_diff", "")
+    data.setdefault("prompt_diffs_by_task", {})
+    data.setdefault("task_prompt_hashes", {})
     data.setdefault("metadata", {})
 
     return RunSnapshot(**data)
@@ -168,6 +174,7 @@ def detect_regressions(
     passed = not stat_report.has_regressions
     decision = "GO" if passed else "NO-GO"
     regressions = []
+    regressed_tasks = set()
     for test in stat_report.tests:
         if test.regressed:
             regressions.append(
@@ -176,6 +183,24 @@ def detect_regressions(
                     f"(p={test.p_value:.3f}, 95% CI=[{test.ci_lower:.4f}, {test.ci_upper:.4f}])"
                 )
             )
+            if test.metric.endswith("_accuracy"):
+                regressed_tasks.add(test.metric[: -len("_accuracy")])
+            elif test.metric.endswith("_pass"):
+                regressed_tasks.add(test.metric[: -len("_pass")])
+
+    current_bundle = current.metadata.get("prompt_metadata", {}).get("prompt_bundle", {})
+    baseline_bundle = baseline.metadata.get("prompt_metadata", {}).get("prompt_bundle", {})
+    prompt_diffs_by_task = (
+        diff_prompt_bundles(
+            current_bundle=current_bundle,
+            baseline_bundle=baseline_bundle,
+            task_types=sorted(regressed_tasks) if regressed_tasks else None,
+        )
+        if current_bundle and baseline_bundle
+        else {}
+    )
+    current.prompt_diffs_by_task = prompt_diffs_by_task
+    current.prompt_diff = summarize_prompt_diffs(prompt_diffs_by_task) or current.prompt_diff
 
     if passed:
         summary = (
@@ -221,6 +246,8 @@ def build_snapshot(
     git_commit: str = "",
     git_branch: str = "",
     prompt_diff: str = "",
+    prompt_diffs_by_task: dict[str, str] | None = None,
+    task_prompt_hashes: dict[str, str] | None = None,
     metadata: dict | None = None,
 ) -> RunSnapshot:
     """Build a RunSnapshot from raw eval results."""
@@ -236,6 +263,7 @@ def build_snapshot(
     task_latency: dict[str, list[float]] = {}
     task_counts: dict[str, int] = {}
     language_scores: dict[str, list[float]] = {}
+    task_language_scores: dict[str, dict[str, list[float]]] = {}
 
     for r, resp in zip(scorer_results, provider_responses):
         tc = tc_map.get(r.test_id)
@@ -247,6 +275,7 @@ def build_snapshot(
         task_latency.setdefault(task_type, []).append(resp.latency_ms)
         task_counts[task_type] = task_counts.get(task_type, 0) + 1
         language_scores.setdefault(language, []).append(r.score)
+        task_language_scores.setdefault(task_type, {}).setdefault(language, []).append(r.score)
 
     task_latency_ms = {
         task: float(np.mean(values)) if values else 0.0
@@ -272,13 +301,17 @@ def build_snapshot(
         task_cost_usd=task_cost_usd,
         task_latency_ms=task_latency_ms,
         task_counts=task_counts,
+        task_language_scores=task_language_scores,
         prompt_hash=prompt_hash,
         prompt_version=prompt_version,
         git_commit=git_commit,
         git_branch=git_branch,
         prompt_diff=prompt_diff,
+        prompt_diffs_by_task=prompt_diffs_by_task or {},
+        task_prompt_hashes=task_prompt_hashes or {},
         metadata={
             **(metadata or {}),
             "language_scores": language_scores,
+            "task_language_scores": task_language_scores,
         },
     )

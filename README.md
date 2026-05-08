@@ -1,222 +1,331 @@
-# 🛡️ The Guard — GrabOn AI Output Eval Pipeline
+# The Guard
 
-A production eval framework that detects quality regressions in GrabOn's AI-generated outputs across model swaps, prompt rewrites, and tool-chain changes — with statistical rigor, an agentic loop, prompt versioning, and a CI/CD gate that blocks bad deployments.
+An eval framework for GrabOn-style LLM outputs that catches regressions across model changes, prompt changes, and scoring/tooling changes before deployment.
 
----
+I chose this assignment because it forces the full loop, not just prompt demos: dataset design, scoring, statistical comparison, reporting, CI gating, and historical tracking. The goal here was to build something that can answer "did quality really drop?" with evidence, not opinion.
+
+## What I Built
+
+- A scriptable eval pipeline with three task families:
+  - `deal_copy`
+  - `insurance_intent`
+  - `credit_narrative`
+- Multiple provider wrappers:
+  - OpenAI `gpt-4o-mini`
+  - Gemini `gemini-2.5-flash-lite`
+  - Groq `llama-3.1-8b-instant`
+- Numerical scorers with pass/fail thresholds
+- Statistical baseline comparison
+- GO / NO-GO / INCONCLUSIVE gate
+- Prompt versioning with hash, git commit, branch, and task-level diffs
+- Historical run tracking
+- Query CLI plus a simple Streamlit dashboard
+- GitHub Actions workflow that runs eval on PRs touching eval-relevant files
 
 ## Architecture
 
-```
-run_eval.py  (entrypoint + CLI)
-│
-├── agent.py                         ← Agentic loop: Plan/Act/Observe/Decide
-│   ├── Phase: PLAN   — select providers + test cases based on git diff
-│   ├── Phase: ACT    — call providers with retry + typed error handling
-│   ├── Phase: OBSERVE — score via ToolRegistry (discoverable, not hardcoded)
-│   └── Phase: DECIDE — statistical gate → GO / NO-GO / INCONCLUSIVE
-│
-├── providers/                        ← Pluggable LLM provider wrappers
-│   ├── openai_provider.py            GPT-4o-mini — quality tasks ($0.15/1M in)
-│   ├── gemini_provider.py            Gemini-Flash — shadow testing ($0.075/1M)
-│   └── groq_provider.py             LLaMA-3-8B — classification ($0.05/1M)
-│
-├── tests/
-│   └── golden_suite.py              Loads 140 cases from tests.json
-│
-├── tests.json                        Source of truth: 45 deal + 40 insurance + 55 credit
-│
-├── scorer/scorer.py                  7 scoring functions (all return 0–1 + 95% CI)
-│   ├── format_compliance            max_chars / title+body split / coupon_any / expired penalty
-│   ├── intent_match                 5 new insurance labels with legacy-label fallback
-│   ├── factual_grounding            only numeric ground-truth keys, skips meta-flags
-│   ├── llm_judge                    Real Anthropic Haiku API call; fallback to semantic
-│   ├── semantic                     Cosine similarity via all-MiniLM-L6-v2
-│   ├── exact                        Exact label match
-│   └── json_match                   Field-level JSON comparison
-│
-├── stats/engine.py                   Statistical tests
-│   ├── Paired bootstrap (primary)   accuracy scores — p-value + 95% CI
-│   ├── McNemar's test               paired pass/fail counts
-│   └── Welch's t-test               latency + cost (continuous metrics)
-│
-├── detector/detector.py              GO / NO-GO / INCONCLUSIVE gate
-├── versioning/prompt_versioning.py   SHA-256 hash + git commit + diff
-├── history/tracker.py                Append-only run history (JSON)
-├── reports/generator.py             JSON + Markdown reports per run
-├── errors.py                        Typed error taxonomy
-├── .github/workflows/eval.yml       CI/CD gate — blocks PR on NO-GO
-└── logs/eval.log                    Structured log (all phases + errors)
-```
-
----
-
-## The 3 GrabOn Eval Tasks
-
-| Task | Cases | Channels / Labels | Scorer | Adversarial |
-|------|-------|-------------------|--------|-------------|
-| Deal Copy Quality | 45 | Email, Push, WhatsApp, Glance × English/Hindi/Telugu/Hinglish | `format_compliance` + `llm_judge` | 17 cases (expired offers, char overflow) |
-| Insurance Intent | 40 | device_protection, travel_insurance, health_micro, accidental_damage, no_insurance | `intent_match` | 14 cases (ambiguous profiles) |
-| Credit Narrative | 55 | — | `factual_grounding` | 5 edge cases (zero txns, negative GMV) |
-| **Total** | **140** | | | |
-
----
-
-## Statistical Approach
-
-**Regression is flagged ONLY when both hold:**
-
-1. **Effect size** ≥ 3 percentage points (MIN_EFFECT_SIZE = 0.03)
-2. **Statistical significance** p < 0.05
-
-This prevents "average went up 2% — is this real?" false alarms.
-
-| Metric | Test | Why |
-|--------|------|-----|
-| Accuracy scores | **Paired Bootstrap** (2000 resamples) | Primary test. Paired on same test cases → correct for correlated samples. |
-| Pass/fail counts | **McNemar's test** | Tests if pass→fail events exceed fail→pass — the right null for paired binary outcomes. |
-| Latency / cost | **Welch's t-test** | Continuous, approximately normal — unpaired OK. |
-
-Every result produces: `Δ`, `95% CI`, `p-value`, `effect_size` (Cohen's d).
-
-**Is this 2% improvement real or noise?** → Read the p-value and CI. If CI contains 0 and p > 0.05, it's noise.
-
----
-
-## Agent Loop (Plan/Act/Observe/Decide)
-
-```
-PLAN    → Select which providers + test cases to run
-           Log tool registry for discoverability
-ACT     → Call each provider with typed-error-aware retry
-           Budget guard kills runaway if cost > MAX_COST_USD
-           Retryable: APIRateLimitError, APITimeoutError, APIServerError (exp backoff)
-           Non-retryable: ContentPolicyError, ProviderRefusalError (score=0, continue)
-OBSERVE → Score results via ToolRegistry (not hardcoded calls)
-           Each scorer is a named, discoverable tool
-DECIDE  → Statistical gate → GO / NO-GO / INCONCLUSIVE
+```text
+                    +----------------------+
+                    |     tests.json       |
+                    |  140 source cases    |
+                    +----------+-----------+
+                               |
+                               v
+                    +----------------------+
+                    | tests/golden_suite.py|
+                    | prompt builders      |
+                    | case metadata        |
+                    +----------+-----------+
+                               |
+                               v
+ +-------------+    +----------------------+    +----------------------+
+ | providers/* | -> |      agent.py        | -> |    scorer/scorer.py  |
+ | openai      |    | PLAN / ACT / OBSERVE |    | numerical scorers    |
+ | gemini      |    | retries / budget     |    | pass/fail thresholds |
+ | groq        |    +----------+-----------+    +----------+-----------+
+ +-------------+               |                           |
+                               +-------------+-------------+
+                                             |
+                                             v
+                               +---------------------------+
+                               |   detector/detector.py    |
+                               | baseline comparison       |
+                               | GO / NO-GO / INCONCLUSIVE |
+                               +-------------+-------------+
+                                             |
+                      +----------------------+----------------------+
+                      |                                             |
+                      v                                             v
+        +-----------------------------+              +-----------------------------+
+        | versioning/prompt_versioning|              | reports/generator.py        |
+        | hash / git / prompt diff    |              | raw JSON + markdown report  |
+        +-----------------------------+              +-----------------------------+
+                      |
+                      v
+        +-----------------------------+
+        | history/tracker.py          |
+        | eval_history.json           |
+        +-------------+---------------+
+                      |
+                      v
+        +-----------------------------+
+        | dashboard/query.py          |
+        | dashboard/app.py            |
+        | CLI + Streamlit dashboard   |
+        +-----------------------------+
 ```
 
-All phase transitions are logged with timestamps to `logs/eval.log`.
+## Per-Module Design Decisions And Tradeoffs
 
----
+### `run_eval.py`
 
-## Multi-LLM Cost Strategy
+- Single entrypoint so the eval can run locally and in CI the same way.
+- Keeps orchestration explicit instead of hiding it behind a framework.
+- Tradeoff: the file is still central and somewhat large.
 
-| Provider | Model | Task rationale | Cost (in/out per 1M tokens) |
-|----------|-------|----------------|------------------------------|
-| OpenAI | `gpt-4o-mini` | deal_copy, credit_narrative (quality-sensitive) | $0.15 / $0.60 |
-| Gemini | `gemini-1.5-flash` | Shadow testing — validates regressions aren't provider-specific | $0.075 / $0.30 |
-| Groq | `llama3-8b-8192` | insurance_intent classification — cheapest at scale | $0.05 / $0.08 |
-| Haiku | `claude-haiku-4-5` | LLM-as-judge for deal copy (oracle, not generating) | $0.80 / $4.00 |
+### `agent.py`
 
-Shadow testing: Groq runs the same cases as OpenAI. Compare `deal_copy` accuracy between them to quantify the quality/cost tradeoff per task.
+- Added a clear PLAN / ACT / OBSERVE / DECIDE loop so provider execution, retries, and budget handling are isolated from reporting.
+- Provider calls are sequential for simplicity and determinism.
+- Tradeoff: simpler control flow, slower than a bounded-concurrency runner.
 
----
+### `providers/*`
 
-## GO / NO-GO Gate
+- Separate wrappers per provider with common `ProviderResponse`.
+- OpenAI now uses task-specific token caps to reduce latency.
+- Gemini response serialization is defensive across SDK shapes.
+- Tradeoff: wrappers are straightforward, but capabilities are normalized to the lowest common structure.
 
-```
-GO            → All metrics within bounds, p-values non-significant. Safe to deploy.
-NO-GO         → Regression detected. PR blocked. Report includes:
-                  ▸ Which task type regressed (e.g. "deal_copy accuracy")
-                  ▸ Delta + 95% CI ([−0.08, −0.02])
-                  ▸ p-value (0.003)
-                  ▸ Which specific test case IDs degraded
-                  ▸ Prompt diff (what changed between versions)
-INCONCLUSIVE  → First run (no baseline) or insufficient samples. Human review.
-```
+### `tests/golden_suite.py`
 
----
+- `tests.json` is the source of truth; prompts are built from structured fixtures at runtime.
+- This makes prompt versioning meaningful because the actual prompt text is generated and stored.
+- Tradeoff: prompt changes can come from fixture or builder edits, so both need to be tracked.
 
-## Prompt Versioning
+### `scorer/scorer.py`
 
-Every prompt is versioned by:
-- **Content hash** (SHA-256[:12]) — detects any character change
-- **Git commit** — ties version to exact code state
-- **Git branch** — separates PR baselines from main
-- **Diff** — `git diff HEAD~1 -- prompts/` shows what changed
+- Numerical scores are first-class; pass/fail is derived from score thresholds.
+- Includes task-appropriate scoring instead of one generic similarity metric.
+- Tradeoff: simple heuristics are easier to audit, but less expressive than richer judges for every task.
 
-On regression: the report includes the diff between the last two prompt versions for the regressed task type.
+### `stats/engine.py`
 
----
+- Uses paired bootstrap for accuracy, McNemar for pass/fail, Welch’s t-test for latency/cost.
+- This is enough to defend claims of regression beyond raw averages.
+- Tradeoff: still lightweight; not a full experiment analysis framework.
 
-## What Broke First (Honest Post-Mortem)
+### `detector/detector.py`
 
-1. **`score_format_compliance` read `max_length` but `tests.json` sends `max_chars`** — all 45 deal cases scored wrong (length_score always 1.0 because the key was missing). Fixed by reading both + push title/body split.
+- Stores baselines per provider and emits a direct deployment decision.
+- Prompt diffs are attached only for regressed task types.
+- Tradeoff: baseline files are local artifacts unless externalized or cached in CI.
 
-2. **`score_factual_grounding` iterated ALL dict keys including `adversarial`, `expected_claims`, `zero_transactions`** — boolean/list meta-flags inflated the denominator, tanking scores on valid narratives. Fixed by `_CREDIT_META_KEYS` skiplist.
+### `versioning/prompt_versioning.py`
 
-3. **`score_intent_match` had old 5-label taxonomy** — `tests.json` uses completely different labels (`device_protection`, `health_micro` etc.). Fixed with explicit label set + legacy-label mapping.
+- Stores prompt bundles by task and case, not just one concatenated hash.
+- Falls back to reading `.git/HEAD` when `git` is installed but missing from `PATH`.
+- Tradeoff: prompt history can become large because full prompt text is persisted.
 
-4. **`score_llm_judge` was not calling any API** — it was reusing semantic similarity with a different weighting. Fixed with real Anthropic Haiku call + graceful fallback.
+### `history/tracker.py` and `dashboard/*`
 
-5. **Groq provider existed in `.env` but was never imported or wired** — `GROQ_API_KEY` was dead config. Fixed by adding `GroqProvider` to `providers/__init__.py` and `run_eval.py`.
+- Stores enough dimensions to answer historical questions by task, model, prompt version, and language.
+- Includes a Streamlit dashboard for quick inspection and a CLI for scriptable queries.
+- Tradeoff: history is JSON, not SQLite; fine for assessment size, weaker for long-term scaling.
 
-6. **No agent loop** — `run_eval.py` was a flat script. The Plan/Act/Observe/Decide phases and ToolRegistry were entirely absent. Added `agent.py`.
+### `.github/workflows/eval.yml`
 
-7. **No budget guard** — a runaway eval could spend unbounded money. Fixed with `BudgetGuard` (default $5 hard limit).
+- Runs eval when eval-relevant files change and blocks PRs on `NO-GO`.
+- Captures the actual eval exit code instead of trying to infer outcome from logs.
+- Tradeoff: `INCONCLUSIVE` also blocks, which is safer but can slow iteration if baselines are missing.
 
-8. **No typed errors** — all provider exceptions caught as `Exception`. Fixed with `errors.py` taxonomy (APIRateLimitError, APITimeoutError, etc.) and typed retry logic.
+## How To Run
 
----
+### Dependencies
 
-## What I'd Change Next
+- Python 3.10+ recommended
+- Provider and tooling dependencies in `requirements.txt`
 
-- **Real Telugu localization test** — currently detected via `metadata.language == "telugu"` but the scorer doesn't verify script. Would add a Unicode-range check.
-- **Confidence calibration scoring** — 3 insurance cases have `expected_confidence_range`. Currently unused; would add a scorer that checks model confidence against the range.
-- **Per-run cost budget by task type** — currently budget is global. Could set `$0.50 max for insurance_intent` separately since Groq is cheap enough.
-- **SQLite history** instead of append-only JSON — querying "when did Telugu quality drop" is a SQL query, not file parsing.
-- **Shadow deploy** — run new model in shadow before promoting to primary, diff outputs at scale before any CI gate.
-
----
-
-## Setup
+Install:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/the-guard
-cd the-guard
-
 pip install -r requirements.txt
+```
 
-cp .env.example .env
-# Add: OPENAI_API_KEY, GEMINI_API_KEY, GROQ_API_KEY, ANTHROPIC_API_KEY
+### Environment Variables
 
-# First run (saves baseline)
+Set these in your shell or `.env`:
+
+```bash
+OPENAI_API_KEY=...
+GEMINI_API_KEY=...
+GROQ_API_KEY=...
+ANTHROPIC_API_KEY=...
+```
+
+Notes:
+
+- `OPENAI_API_KEY` is required for OpenAI eval runs
+- `GEMINI_API_KEY` is required for Gemini eval runs
+- `GROQ_API_KEY` is required for Groq eval runs
+- `ANTHROPIC_API_KEY` is only needed for the LLM judge path
+
+### Eval Commands
+
+Full run:
+
+```bash
 python run_eval.py
+```
 
-# Subsequent runs compare against baseline
-python run_eval.py
+Provider-specific:
 
-# Update baseline after intentional improvement
+```bash
+python run_eval.py --provider openai
+python run_eval.py --provider gemini
+python run_eval.py --provider groq
+```
+
+Task-specific:
+
+```bash
+python run_eval.py --task deal_copy
+python run_eval.py --task insurance_intent
+python run_eval.py --task credit_narrative
+```
+
+Setup check:
+
+```bash
+python run_eval.py --dry-run
+```
+
+Update baseline intentionally:
+
+```bash
 python run_eval.py --update-baseline
 ```
 
-## CLI Reference
+Budget override:
 
 ```bash
-python run_eval.py                           # Full eval, all providers
-python run_eval.py --provider groq           # Groq only (cheapest)
-python run_eval.py --provider openai         # OpenAI only
-python run_eval.py --task deal_copy          # One task type
-python run_eval.py --dry-run                 # Validate setup, list tools
-python run_eval.py --update-baseline         # Run + save as new baseline
-python run_eval.py --simulate-regression     # Inject bad prompt, test gate
-python run_eval.py --max-cost 1.00           # Hard budget limit $1
+python run_eval.py --max-cost 1.00
 ```
 
-## CI/CD
+### Dashboard CLI
 
-- Every PR touching `prompts/`, `providers/`, `scorer/`, `stats/`, `tests.json` triggers eval
-- Report posted as PR comment (Markdown)
-- PR **blocked** on NO-GO (exit code 1)
-- Baselines cached per branch in GitHub Actions cache
+Historical slice:
 
-Add secrets: `OPENAI_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`
+```bash
+python -m dashboard.query history --task-type deal_copy --language telugu
+```
+
+Drop detector:
+
+```bash
+python -m dashboard.query drop --language telugu --task-type deal_copy
+```
+
+### Streamlit Dashboard
+
+```bash
+streamlit run dashboard/app.py
+```
+
+## Eval Results
+
+Latest full raw report in this repo:
+
+- JSON: [reports/run_20260508_045023_c7ce95.json](/d:/Projects/the-guard/reports/run_20260508_045023_c7ce95.json:1)
+- Markdown: [reports/run_20260508_045023_c7ce95.md](/d:/Projects/the-guard/reports/run_20260508_045023_c7ce95.md:1)
+
+Key metrics from that run:
+
+### OpenAI
+
+- Model: `gpt-4o-mini`
+- Decision: `GO`
+- Pass rate: `67.9%`
+- Mean accuracy: `0.7981`
+- Avg latency: `2365.6 ms`
+- Total cost: `$0.007930`
+
+### Gemini
+
+- Model: `gemini-2.5-flash-lite`
+- Decision: `NO-GO`
+- Pass rate: `68.6%`
+- Mean accuracy: `0.8207`
+- Avg latency: `1435.1 ms`
+- Total cost: `$0.004797`
+
+### Groq
+
+- Model: `llama-3.1-8b-instant`
+- Decision: `GO`
+- Raw details are in the same report file
+
+The raw eval report includes:
+
+- pass/fail per test case
+- numerical scores
+- cost
+- latency
+- statistical comparison against baseline
+
+That report is the artifact to submit for the "actual eval output" requirement.
+
+## CI/CD Integration
+
+Workflow file:
+
+- [.github/workflows/eval.yml](/d:/Projects/the-guard/.github/workflows/eval.yml:1)
+
+Behavior:
+
+- Runs on PRs touching prompts, providers, scoring, detector, versioning, dashboard, history, tests, or workflow code
+- Runs `run_eval.py`
+- Uploads raw reports
+- Posts markdown report to the PR
+- Blocks merge on `NO-GO`
+- Blocks `INCONCLUSIVE` for manual review
+
+Repository settings note:
+
+- GitHub branch protection must mark this workflow as a required status check for PR blocking to be enforced.
+
+## What Broke First
+
+Only the major bugs are listed here.
+
+1. `score_format_compliance` was reading the wrong length key.
+   `tests.json` used `max_chars`, while the scorer expected `max_length`. That made deal-copy length checks effectively wrong across the suite. I fixed it by supporting both shapes and the title/body split path.
+
+2. Gemini calls were succeeding, then failing during response serialization.
+   The provider tried to call `candidate.to_dict()`, which was not valid for the installed SDK object shape and converted successful generations into provider errors. I replaced it with defensive serialization that supports multiple SDK representations.
+
+3. Prompt versioning looked implemented in the README, but it was not actually diffing prompt versions.
+   The old code stored hash/timestamp metadata but did not retain prompt text by task, so there was no real baseline-vs-current prompt diff. I fixed this by storing prompt bundles, per-task hashes, and unified diffs for regressed task types.
+
+4. Git metadata kept showing `unknown`.
+   The repo was a valid git worktree, but `git` was not on `PATH` in the environment. I fixed this by resolving common Windows git paths and falling back to reading `.git/HEAD` directly.
+
+5. Report generation crashed on JSON serialization.
+   Statistical results contained NumPy scalar booleans/floats, which `json.dump` rejected. I added recursive normalization before writing report JSON.
+
+## What I Would Change With 2 More Weeks
+
+- Move history storage from JSON to SQLite so questions like "when did Telugu quality drop?" become fast, reliable queries.
+- Add bounded concurrency to provider execution with per-provider rate-limit controls to reduce total eval time.
+- Add a true Telugu script/quality validator instead of language-only grouping.
+- Split baselines into local vs canonical CI baselines more cleanly.
+- Add first-class model config files instead of embedding all provider config in Python classes.
+- Add richer dashboard visualizations and commit links back to GitHub.
+- Add unit tests around prompt versioning, report generation, and dashboard queries.
 
 ## Exit Codes
 
-| Code | Verdict | Meaning |
-|------|---------|---------|
-| `0` | GO | No regressions — safe to deploy |
-| `1` | NO-GO | Regression detected — PR blocked |
-| `2` | INCONCLUSIVE | First run / insufficient data |
+| Code | Meaning |
+|------|---------|
+| `0` | GO |
+| `1` | NO-GO |
+| `2` | INCONCLUSIVE |

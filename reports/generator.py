@@ -17,17 +17,22 @@ REPORTS_DIR = Path(__file__).parent.parent / "reports"
 REPORTS_DIR.mkdir(exist_ok=True)
 
 
+def _json_safe(value):
+    try:
+        import numpy as np
+    except Exception:
+        np = None
 
-def _fmt_delta(delta: float, unit: str = "", invert: bool = False) -> str:
-    if abs(delta) < 1e-6:
-        return f"→ 0{unit}"
+    if np is not None and isinstance(value, np.generic):
+        return value.item()
 
-    if (delta > 0 and not invert) or (delta < 0 and invert):
-        return f"▲ +{delta:.4f}{unit}"
+    if isinstance(value, dict):
+        return {str(k): _json_safe(v) for k, v in value.items()}
 
-    return f"▼ {delta:.4f}{unit}"
+    if isinstance(value, (list, tuple, set)):
+        return [_json_safe(v) for v in value]
 
-
+    return value
 
 def generate_json_report(
     run_id: str,
@@ -72,13 +77,15 @@ def generate_json_report(
                 "provider": dr.provider,
                 "model": dr.current_snapshot.model,
                 "passed": dr.passed,
-                "decision": "GO" if dr.passed else "NO-GO",
+                "decision": dr.decision,
                 "regressions": dr.regressions,
                 "summary": dr.summary,
                 "prompt_hash": dr.current_snapshot.prompt_hash,
+                "task_prompt_hashes": dr.current_snapshot.task_prompt_hashes,
                 "git_commit": dr.current_snapshot.git_commit,
                 "git_branch": dr.current_snapshot.git_branch,
                 "prompt_diff": dr.current_snapshot.prompt_diff,
+                "prompt_diffs_by_task": dr.current_snapshot.prompt_diffs_by_task,
                 "current": {
                     "pass_rate": dr.current_snapshot.pass_rate,
                     "mean_accuracy": dr.current_snapshot.mean_accuracy,
@@ -101,8 +108,8 @@ def generate_json_report(
 
     path = REPORTS_DIR / f"{run_id}.json"
 
-    with open(path, "w") as f:
-        json.dump(report, f, indent=2)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(_json_safe(report), f, indent=2)
 
     return path
 
@@ -236,9 +243,33 @@ def generate_markdown_report(
                 f"",
             ]
 
+            if dr.current_snapshot.task_prompt_hashes:
+                lines += [
+                    f"### Task Prompt Hashes",
+                    f"",
+                ]
+                for task_type, prompt_hash in sorted(dr.current_snapshot.task_prompt_hashes.items()):
+                    lines.append(f"- `{task_type}`: `{prompt_hash}`")
+                lines += [""]
+
+            prompt_diffs_by_task = dr.current_snapshot.prompt_diffs_by_task
             prompt_diff = dr.current_snapshot.prompt_diff
 
-            if prompt_diff:
+            if prompt_diffs_by_task:
+                lines += [
+                    f"### Prompt Diffs By Regressed Task",
+                    f"",
+                ]
+                for task_type, diff_text in sorted(prompt_diffs_by_task.items()):
+                    lines += [
+                        f"#### {task_type}",
+                        f"",
+                        f"```diff",
+                        diff_text[:1200],
+                        f"```",
+                        f"",
+                    ]
+            elif prompt_diff:
                 lines += [
                     f"### Prompt Diff",
                     f"",
@@ -338,7 +369,7 @@ def generate_markdown_report(
 
     path = REPORTS_DIR / f"{run_id}.md"
 
-    with open(path, "w") as f:
-        f.write("".join(lines))
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
 
         return path

@@ -15,14 +15,10 @@ VALIDATION FIXES applied during integration (see full list at bottom of file):
 """
 
 import json
-import re
 from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 from pydantic import BaseModel
 
-# ─────────────────────────────────────────────
-# Constants
-# ─────────────────────────────────────────────
 TaskType = Literal[
     "deal_copy", "insurance_intent", "credit_narrative",
     "summarization", "classification", "extraction",
@@ -32,7 +28,6 @@ ScoringMethod = Literal[
     "llm_judge", "semantic", "exact", "json_match",
 ]
 
-# NEW labels from tests.json — different from old golden_suite
 INSURANCE_LABELS = frozenset({
     "device_protection",
     "travel_insurance",
@@ -51,9 +46,6 @@ class TestCase(BaseModel):
     metadata: dict = {}
 
 
-# ─────────────────────────────────────────────
-# DEAL COPY builders
-# ─────────────────────────────────────────────
 def _build_deal_prompt(c: dict) -> str:
     lang_map = {
         "english":  "Respond in English.",
@@ -142,9 +134,6 @@ def _make_deal_case(raw: dict) -> TestCase:
     )
 
 
-# ─────────────────────────────────────────────
-# INSURANCE INTENT builders
-# ─────────────────────────────────────────────
 def _build_insurance_prompt(c: dict) -> str:
     labels_str = ", ".join(sorted(INSURANCE_LABELS))
     return (
@@ -186,9 +175,6 @@ def _make_insurance_case(raw: dict) -> TestCase:
     )
 
 
-# ─────────────────────────────────────────────
-# CREDIT NARRATIVE builders
-# ─────────────────────────────────────────────
 def _build_credit_prompt(c: dict) -> str:
     lang_map = {
         "english":  "Write the narrative in English.",
@@ -222,7 +208,6 @@ def _build_credit_prompt(c: dict) -> str:
 
 def _build_credit_expected(c: dict) -> dict:
     return {
-        # Numeric ground truth — factual_grounding scorer checks these
         "gmv_growth_yoy":          c["gmv_growth_yoy"],
         "monthly_transactions":     c["monthly_transactions"],
         "repeat_customer_rate":     c["repeat_customer_rate"],
@@ -231,9 +216,7 @@ def _build_credit_expected(c: dict) -> dict:
         "late_payments":            c["late_payments"],
         "refund_rate":              c["refund_rate"],
         "business_category":        c["business_category"],
-        # Human-readable claims for semantic cross-check
         "expected_claims":          c.get("expected_claims", []),
-        # Edge case flags
         "adversarial":              c["metadata"].get("adversarial", False),
         "expected_failure_modes":   c["metadata"].get("expected_failure_modes", []),
         "zero_transactions":        c["monthly_transactions"] == 0,
@@ -259,9 +242,6 @@ def _make_credit_case(raw: dict) -> TestCase:
     )
 
 
-# ─────────────────────────────────────────────
-# Loader + validator
-# ─────────────────────────────────────────────
 def _load_tests_json() -> dict:
     candidates = [
         Path(__file__).parent.parent / "tests.json",
@@ -310,9 +290,6 @@ def _validate_and_report(data: dict) -> list[str]:
     return warnings
 
 
-# ─────────────────────────────────────────────
-# Build suite
-# ─────────────────────────────────────────────
 _data = _load_tests_json()
 _VALIDATION_WARNINGS = _validate_and_report(_data)
 

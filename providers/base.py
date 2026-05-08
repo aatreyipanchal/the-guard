@@ -31,6 +31,7 @@ class ProviderResponse:
 class BaseProvider(ABC):
     name: str
     model: str
+    request_gap_seconds: float = 0.0
 
     @abstractmethod
     def call(self, prompt: str, test_id: str) -> ProviderResponse:

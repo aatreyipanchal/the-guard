@@ -73,7 +73,7 @@ class AgentState:
             timestamp=datetime.now(timezone.utc).isoformat(),
             notes=notes,
         ))
-        logger.info(f"[{self.run_id}] Phase → {phase.value}  {notes}")
+        logger.info(f"[{self.run_id}] Phase -> {phase.value}  {notes}")
 
 
 # ─────────────────────────────────────────────
@@ -223,7 +223,9 @@ class EvalAgent:
                 state.total_tokens   += resp.total_tokens
                 self.budget.check(state.total_cost_usd, state.total_tokens, test_id=test_id)
 
-                time.sleep(0.3)  # gentle rate limiting
+                request_gap_seconds = getattr(provider, "request_gap_seconds", 0.0)
+                if request_gap_seconds > 0:
+                    time.sleep(request_gap_seconds)
 
     def _run_one_test(self, provider, tc, state: AgentState):
         """Run a single test with typed-error-aware retry."""

@@ -16,7 +16,6 @@ This prevents noisy single-run results from triggering false alarms.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 import numpy as np
 from scipy import stats
 
