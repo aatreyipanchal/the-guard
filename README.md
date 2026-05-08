@@ -43,6 +43,23 @@ Beyond the core requirements, I focused on making this pipeline "hardened" for r
 - **Latency Distribution**: Added **P95 and StdDev** tracking. In production, averages hide spikes; monitoring the tail-end of latency is critical for user experience.
 - **Traceability**: Every run is now tagged with **Git commit, branch, and dirty status**, ensuring that if a regression is found, we know exactly which line of code caused it.
 
+### 🎯 Selected Models & Rationale
+
+| Provider | Model | Rationale | Cost (Input/Output) |
+| :--- | :--- | :--- | :--- |
+| **OpenAI** | `gpt-4o-mini` | Quality leader for complex Marketing & Credit tasks. | $0.15 / $0.60 per 1M |
+| **Gemini** | `gemini-2.5-flash-lite` | Used for shadow testing and multi-model cross-validation. | $0.075 / $0.30 per 1M |
+| **Groq** | `llama-3.1-8b-instant` | High-speed, low-cost baseline for classification. | ~$0.05 per 1M |
+
+### 📊 Evaluation Tasks
+
+- **Deal Copy Generation**: Multi-channel marketing copy (English, Hindi, Telugu, Hinglish).
+- **Insurance Intent Classification**: 5-label classification for micro-insurance products.
+- **Credit Narrative Faithfulness**: Factual grounding check for regulated financial summaries.
+- **Summarization Quality**: Quality check for multi-provider summaries.
+- **Customer Query Classification**: Sorting incoming queries by intent and priority.
+- **Structured Data Extraction**: Schema-compliant JSON extraction from raw text.
+
 ---
 
 ## 🚀 Operational Guide
@@ -96,6 +113,16 @@ graph TD
         HS --> |Historical Data| DB[dashboard/app.py]
     end
 ```
+
+---
+
+## ⚙️ CI/CD Integration
+
+This pipeline acts as a professional quality gate for GrabOn's production releases:
+- **Automated Gate**: Every PR triggers a run. If the Statistical Engine detects a regression ($p < 0.05$), the build fails (Exit Code 1), blocking the merge.
+- **Baseline Comparison**: PR code is automatically compared against the production "Ground Truth" stored in `baselines/`.
+- **Regression Traceability**: If a run fails, the system generates a **Prompt Diff** showing exactly which change in `tests/` or prompt logic caused the quality drop.
+- **Simulation Mode**: Use `--simulate-regression` in CI to verify that the gate is active and correctly blocking low-quality outputs.
 
 ---
 
