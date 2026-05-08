@@ -1,22 +1,3 @@
-"""
-agent.py — Plan/Act/Observe/Decide agent loop for The Guard eval pipeline.
-
-This is the agentic orchestration layer. It wraps the flat eval pipeline in a
-named, stateful agent loop with:
-  - Plan:    Determine which providers + tasks to run based on git diff
-  - Act:     Execute each test case via the tool registry
-  - Observe: Collect scores, latency, cost per test
-  - Decide:  Apply statistical gate → GO / NO-GO / INCONCLUSIVE
-
-The agent is stateful: phase transitions are logged with timestamps.
-Budget guard: kills runaway runs that exceed MAX_COST_USD or MAX_TOKENS.
-Retry with backoff: distinguishes typed errors and re-plans on persistent failure.
-
-Usage (from run_eval.py):
-    agent = EvalAgent(providers, test_cases, budget=BudgetGuard())
-    result = agent.run(run_id)
-"""
-
 import logging
 import time
 from dataclasses import dataclass, field
@@ -41,7 +22,7 @@ logger = logging.getLogger("the_guard.agent")
 
 
 # ─────────────────────────────────────────────
-# Agent phases (named abstraction)
+# Agent phases 
 # ─────────────────────────────────────────────
 class Phase(str, Enum):
     PLAN    = "PLAN"
@@ -61,7 +42,6 @@ class PhaseTransition:
 
 @dataclass
 class AgentState:
-    """Versioned state object — mutated across phases."""
     run_id: str
     phase: Phase = Phase.PLAN
     phase_history: list = field(default_factory=list)
@@ -114,11 +94,6 @@ class BudgetGuard:
 # Tool registry — scorers as discoverable tools
 # ─────────────────────────────────────────────
 class ToolRegistry:
-    """
-    Thin registry wrapping scorer functions as named tools.
-    Tools are discoverable at runtime — new scorers can be registered without
-    modifying the agent loop.
-    """
     def __init__(self):
         self._tools: dict = {}
 
@@ -139,7 +114,6 @@ class ToolRegistry:
 
 
 def build_tool_registry() -> ToolRegistry:
-    """Build and return the default tool registry with all scorers registered."""
     registry = ToolRegistry()
     registry.register("exact",              score_exact,              "Exact string match (classification)")
     registry.register("semantic",           score_semantic,           "Cosine similarity via sentence embeddings (summarisation)")
@@ -155,15 +129,6 @@ def build_tool_registry() -> ToolRegistry:
 # Main agent
 # ─────────────────────────────────────────────
 class EvalAgent:
-    """
-    Stateful agent that orchestrates the full eval loop.
-
-    Phases:
-      PLAN    → decide which tests to run per provider
-      ACT     → call providers, check budget after each test
-      OBSERVE → score results via tool registry
-      DECIDE  → run statistical gate, produce verdict
-    """
 
     MAX_RETRIES_PER_TEST = 3
     RETRY_BACKOFF_BASE   = 2.0   # seconds
@@ -241,7 +206,6 @@ class EvalAgent:
                 list(executor.map(_worker, test_ids))
 
     def _run_one_test(self, provider, tc, state: AgentState):
-        """Run a single test with typed-error-aware retry."""
         last_resp = None
         for attempt in range(self.MAX_RETRIES_PER_TEST):
             resp = provider.call(tc.prompt, tc.id)
