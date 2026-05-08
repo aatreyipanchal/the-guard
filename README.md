@@ -88,36 +88,40 @@ python run_eval.py --simulate-regression
 
 ```mermaid
 graph TD
-    subgraph "Input Layer"
-        TS["tests.json"] --> GS["tests/golden_suite.py"]
-        GS --> |"170 Test Cases"| AG["agent.py"]
-    end
+    TS["tests.json"] --> GS["tests/golden_suite.py"]
+    GS --> RTC["ALL_TEST_CASES"]
+    RTC --> RE["run_eval.py"]
 
-    subgraph "Orchestration (Agent Loop)"
-        AG --> |"PLAN"| PV["providers/*"]
-        AG --> |"ACT"| PV
-        PV --> |"Responses"| AG
-        AG --> |"OBSERVE"| TR["Tool Registry"]
-        TR --> SC["scorer/scorer.py"]
-    end
+    RE --> BP["build_providers()"]
+    BP --> PV["providers/*"]
 
-    subgraph "Decision & Statistical Engine"
-        SC --> |"Scores"| DT["detector/detector.py"]
-        DT --> |"Statistical Test"| SE["stats/engine.py"]
-        SE --> |"P-Values / Confidence Intervals"| DT
-    end
+    RE --> AG["agent.py (EvalAgent)"]
+    PV --> AG
+    AG --> PLAN["PLAN"]
+    AG --> ACT["ACT: call providers"]
+    ACT --> PV
+    PV --> RESP["ProviderResponse objects"]
+    RESP --> OBS["OBSERVE: tool registry"]
+    OBS --> SC["scorer/scorer.py"]
+    SC --> SCORES["ScorerResult objects"]
+    SCORES --> AG
 
-    subgraph "Versioning & Persistence"
-        DT --> |"Snapshot"| HS["history/tracker.py"]
-        DT --> |"Diff"| VP["versioning/prompt_versioning.py"]
-        VP --> |"Git Metadata"| HS
-    end
+    AG --> STATE["AgentState"]
+    STATE --> SNAP["detector.build_snapshot()"]
+    RE --> VP["versioning/prompt_versioning.py"]
+    VP --> SNAP
 
-    subgraph "Output & Reporting"
-        DT --> |"Verdict"| RG["reports/generator.py"]
-        RG --> |"JSON / Markdown"| Artifacts
-        HS --> |"Historical Data"| DB["dashboard/app.py"]
-    end
+    SNAP --> DT["detector/detector.py"]
+    DT --> SE["stats/engine.py"]
+    SE --> DT
+
+    DT --> DR["DetectorResult"]
+    DR --> HT["history/tracker.py"]
+    DR --> RG["reports/generator.py"]
+
+    HT --> DBQ["dashboard/query.py"]
+    DBQ --> DBA["dashboard/app.py"]
+    RG --> ART["JSON / Markdown reports"]
 ```
 
 ---
