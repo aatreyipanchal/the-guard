@@ -53,12 +53,15 @@ Beyond the core requirements, I focused on making this pipeline "hardened" for r
 
 ### 📊 Evaluation Tasks
 
+#### Core Requirements (GrabOn Challenge)
 - **Deal Copy Generation**: Multi-channel marketing copy (English, Hindi, Telugu, Hinglish).
 - **Insurance Intent Classification**: 5-label classification for micro-insurance products.
 - **Credit Narrative Faithfulness**: Factual grounding check for regulated financial summaries.
-- **Summarization Quality**: Quality check for multi-provider summaries.
-- **Customer Query Classification**: Sorting incoming queries by intent and priority.
-- **Structured Data Extraction**: Schema-compliant JSON extraction from raw text.
+
+#### Enhanced Scope
+- **Summarization Quality**: Evaluates semantic density and factual alignment of model-generated summaries.
+- **Customer Query Classification**: High-speed intent sorting for customer support automation.
+- **Structured Data Extraction**: Schema-compliant JSON extraction from raw, unstructured text.
 
 ---
 
