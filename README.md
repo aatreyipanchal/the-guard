@@ -15,9 +15,12 @@ Most pipelines fail by comparing simple averages. This framework uses a **multi-
 - **Performance**: Uses **Welch’s t-test** for latency/cost variances.
 - **Verdict**: A `NO-GO` is only triggered if the regression is statistically significant ($p < 0.05$).
 
-### 2. "LLM-as-a-Judge" Scorer
-**Implementation**: `scorer/scorer.py` -> `score_llm_judge`
-Uses **GPT-4o-Mini** with a 4-point professional marketing rubric: **Persuasion, Clarity, Factuality, and Tone**. It returns a weighted composite score and includes a graceful fallback to high-threshold semantic similarity if the API is unavailable.
+### 2. Scoring Strategy for Generative Tasks
+**Implementation**: `scorer/scorer.py`
+The pipeline includes multiple task-specific scorers instead of relying on a single generic metric.
+- **Active deal-copy scorer**: `score_format_compliance`, which checks character limits, coupon presence, required phrases, and format compliance.
+- **Available supporting scorer**: `score_llm_judge`, which uses **GPT-4o-Mini** with a 4-point marketing rubric: **Persuasion, Clarity, Factuality, and Tone**.
+- **Fallback behavior**: if the judge API is unavailable, `score_llm_judge` falls back to semantic similarity.
 
 ### 3. Credit Narrative Faithfulness (Hard Task)
 **Implementation**: `scorer/scorer.py` -> `score_factual_grounding`
@@ -132,13 +135,13 @@ This pipeline acts as a professional quality gate for GrabOn's production releas
 ## (c) Per-Module Design Decisions & Tradeoffs
 
 ### 1. `agent.py` (The Orchestrator)
-- **Decision**: Implemented a stateful **PLAN/ACT/OBSERVE/DECIDE** loop.
-- **Tradeoff**: Sequential execution ensures budget safety and determinism but is slower than a parallel runner.
+- **Decision**: Implemented a stateful **PLAN/ACT/OBSERVE/DECIDE** loop with bounded parallel execution.
+- **Tradeoff**: Using `ThreadPoolExecutor` with a fixed worker cap improves throughput, but it introduces some ordering non-determinism compared to a purely sequential runner.
 
 ### 2. `scorer/scorer.py` (Centralized Thresholds)
 - **Decision**: Moved from hardcoded values to a centralized `TASK_THRESHOLDS` mapping.
 - **Tradeoff**: Ensures consistency across 6 tasks, though it requires updating the registry when adding new task types.
-- **Innovation**: Switched the **LLM-as-Judge** to use OpenAI's `gpt-4o-mini` with `json_object` format to remove Anthropic key dependencies and reduce costs by 80%.
+- **Implementation note**: The module includes an OpenAI `gpt-4o-mini` judge path with `json_object` output support, while the generated deal-copy suite currently uses `format_compliance` as its primary scorer.
 
 ### 3. `stats/engine.py` (The Statistical Heart)
 - **Decision**: Uses **Paired Bootstrap** for accuracy and **McNemar’s Test** for pass-rates.
