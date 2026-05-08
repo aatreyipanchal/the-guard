@@ -86,34 +86,34 @@ python run_eval.py --simulate-regression
 ```mermaid
 graph TD
     subgraph "Input Layer"
-        TS[tests.json] --> GS[tests/golden_suite.py]
-        GS --> |170 Test Cases| AG[agent.py]
+        TS["tests.json"] --> GS["tests/golden_suite.py"]
+        GS --> |"170 Test Cases"| AG["agent.py"]
     end
 
     subgraph "Orchestration (Agent Loop)"
-        AG --> |PLAN| PV[providers/*]
-        AG --> |ACT| PV
-        PV --> |Responses| AG
-        AG --> |OBSERVE| TR[Tool Registry]
-        TR --> SC[scorer/scorer.py]
+        AG --> |"PLAN"| PV["providers/*"]
+        AG --> |"ACT"| PV
+        PV --> |"Responses"| AG
+        AG --> |"OBSERVE"| TR["Tool Registry"]
+        TR --> SC["scorer/scorer.py"]
     end
 
     subgraph "Decision & Statistical Engine"
-        SC --> |Scores| DT[detector/detector.py]
-        DT --> |Statistical Test| SE[stats/engine.py]
-        SE --> |P-Values / Confidence Intervals| DT
+        SC --> |"Scores"| DT["detector/detector.py"]
+        DT --> |"Statistical Test"| SE["stats/engine.py"]
+        SE --> |"P-Values / Confidence Intervals"| DT
     end
 
     subgraph "Versioning & Persistence"
-        DT --> |Snapshot| HS[history/tracker.py]
-        DT --> |Diff| VP[versioning/prompt_versioning.py]
-        VP --> |Git Metadata| HS
+        DT --> |"Snapshot"| HS["history/tracker.py"]
+        DT --> |"Diff"| VP["versioning/prompt_versioning.py"]
+        VP --> |"Git Metadata"| HS
     end
 
     subgraph "Output & Reporting"
-        DT --> |Verdict| RG[reports/generator.py]
-        RG --> |JSON / Markdown| Artifacts
-        HS --> |Historical Data| DB[dashboard/app.py]
+        DT --> |"Verdict"| RG["reports/generator.py"]
+        RG --> |"JSON / Markdown"| Artifacts
+        HS --> |"Historical Data"| DB["dashboard/app.py"]
     end
 ```
 
