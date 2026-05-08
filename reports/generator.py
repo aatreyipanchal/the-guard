@@ -166,11 +166,8 @@ def generate_markdown_report(
         f"",
         f"**Run ID:** `{run_id}`  ",
         f"**Generated:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}  ",
-        f"**Status:** {status_badge}",
         f"",
-        f"## Deployment Decision",
-        f"",
-        f"### {decision}",
+        f"## Deployment Decision: **{overall_decision}**",
         f"",
         f"## Test Suite",
         f"",
@@ -220,10 +217,11 @@ def generate_markdown_report(
                     else "—"
                 )
 
-                ci = (
-                    f"[{getattr(t, 'ci_lower', 0.0):.4f}, "
-                    f"{getattr(t, 'ci_upper', 1.0):.4f}]"
-                )
+                # Only show CI for bootstrap tests (which actually compute it)
+                if t.test_name == "Paired bootstrap" and (t.ci_lower != 0 or t.ci_upper != 0):
+                    ci = f"[{t.ci_lower:.4f}, {t.ci_upper:.4f}]"
+                else:
+                    ci = "—"
 
                 lines.append(
                     f"| {t.metric} | "

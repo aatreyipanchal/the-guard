@@ -45,6 +45,22 @@ Beyond the core requirements, I focused on making this pipeline "hardened" for r
 
 ---
 
+## 🚀 Operational Guide
+
+### 1. Execution Commands
+```powershell
+# Standard Run (Compares against baseline)
+python run_eval.py
+
+# Update Baseline (Use this after prompt/model changes to set new ground truth)
+python run_eval.py --update-baseline
+
+# Regression Simulation (Sabotages outputs to test the CI gate)
+python run_eval.py --simulate-regression
+```
+
+---
+
 ## (b) Architecture Diagram
 
 ```mermaid
