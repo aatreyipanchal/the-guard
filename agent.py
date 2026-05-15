@@ -121,7 +121,7 @@ def build_tool_registry() -> ToolRegistry:
     registry.register("format_compliance",  score_format_compliance,  "Channel char-limit + coupon + phrase compliance (deal copy)")
     registry.register("intent_match",       score_intent_match,       "Insurance intent label classification")
     registry.register("factual_grounding",  score_factual_grounding,  "Credit narrative hallucination check")
-    registry.register("llm_judge",          score_llm_judge,          "Opus/Haiku LLM-as-judge for deal copy quality")
+    registry.register("llm_judge",          score_llm_judge,          "LLM-as-judge for deal copy quality")
     return registry
 
 
